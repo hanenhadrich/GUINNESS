@@ -1,0 +1,16 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.container-fluid {
+  
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex-grow: 1; 
+}
+
+
