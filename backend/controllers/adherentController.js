@@ -3,31 +3,28 @@ import { adherentValidator } from '../validators/adherentValidator.js';
 
 export const getAllAdherents = async (req, res) => {
   try {
-    // Récupérer les paramètres de la requête depuis l'URL (query params)
+    
     const { nom, prenom, email } = req.query;
-
-    // Créer un objet de filtre de base
     let query = {};
-
-    // Si un nom est fourni, on ajoute le filtre au query
+   
     if (nom) {
-      query.nom = { $regex: nom, $options: 'i' }; // Insensible à la casse
+      query.nom = { $regex: nom, $options: 'i' }; 
     }
 
-    // Si un prénom est fourni, on ajoute le filtre au query
+    
     if (prenom) {
       query.prenom = { $regex: prenom, $options: 'i' };
     }
 
-    // Si un email est fourni, on ajoute le filtre au query
+    
     if (email) {
       query.email = { $regex: email, $options: 'i' };
     }
 
-    // Si aucun filtre n'est appliqué, la requête renvoie tous les adhérents
+    
     const adherents = await Adherent.find(query);
 
-    // Répondre avec les adhérents trouvés
+    
     res.json(adherents);
   } catch (error) {
     console.error("Erreur lors de la récupération des adhérents:", error.message);

@@ -7,6 +7,7 @@ import cors from 'cors';
 import todoRoutes from './backend/routes/todoRoutes.js'; 
 import reservationRoutes from './backend/routes/reservationRoutes.js'; 
 import adherentRoutes from './backend/routes/adherentRoutes.js';
+import subscriptionRoutes from './backend/routes/subscriptionRoutes.js';
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.get("/", (req, res) => {
 app.use('/todos', todoRoutes);
 app.use('/reservations', reservationRoutes);
 app.use('/adherents', adherentRoutes);
+app.use('/subscriptions', subscriptionRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

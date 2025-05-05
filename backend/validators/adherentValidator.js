@@ -18,11 +18,10 @@ export const adherentValidator = Joi.object({
     'string.email': 'L\'email doit être valide.',
     'string.empty': 'L\'email est requis.',
   }),
-  telephone: Joi.string().required().min(8).max(20).messages({
+  telephone: Joi.string().pattern(/^\+216\d{8}$/).required().messages({
     'string.base': 'Le téléphone doit être une chaîne de caractères.',
     'string.empty': 'Le téléphone est requis.',
-    'string.min': 'Le téléphone doit avoir au moins 8 caractères.',
-    'string.max': 'Le téléphone doit avoir au maximum 20 caractères.',
+    'string.pattern.base': 'Le téléphone doit être un numéro valide (ex: +21612345678).',
   }),
   actif: Joi.boolean()
 });
