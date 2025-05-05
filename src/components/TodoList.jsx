@@ -1,17 +1,17 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { FaPlusCircle, FaTrash  } from 'react-icons/fa';
+import { FaPlusCircle, FaTrash } from 'react-icons/fa';
 import { fetchTodos, createTodo, updateTodo, deleteTodo } from '../store/todoSlice';
 
 export default function TodoList() {
   const dispatch = useDispatch();
   const { list: tasks, loading: todoLoading, error: todoError } = useSelector((state) => state.todos);
   const [newTask, setNewTask] = React.useState('');
+  const [deleteConfirmation, setDeleteConfirmation] = React.useState(null); // Pour confirmation de suppression
 
   React.useEffect(() => {
     dispatch(fetchTodos());
   }, [dispatch]);
-
 
   const handleAddTask = (e) => {
     e.preventDefault();
@@ -21,14 +21,28 @@ export default function TodoList() {
     }
   };
 
-
   const toggleTaskCompletion = (task) => {
-    dispatch(updateTodo({ todoId: task._id, newData: { completed: !task.completed } }));
+    const newData = {
+      completed: !task.completed, // Si l'API attend un changement de statut "completed"
+      title: task.title, // Ajoute éventuellement un titre si l'API l'attend
+    };
+    dispatch(updateTodo({ todoId: task._id, newData }));
   };
-
+  
+  
 
   const handleDeleteTask = (task) => {
+    // Demander confirmation avant suppression
+    setDeleteConfirmation(task._id);
+  };
+
+  const confirmDelete = (task) => {
     dispatch(deleteTodo(task._id));
+    setDeleteConfirmation(null); // Fermer la confirmation après suppression
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirmation(null); // Annuler la suppression
   };
 
   return (
@@ -85,8 +99,24 @@ export default function TodoList() {
                     >
                       <FaTrash />
                     </button>
-
                   </div>
+
+                  {deleteConfirmation === task._id && (
+                    <div className="confirmation">
+                      <button
+                        className="btn btn-danger btn-sm ms-2"
+                        onClick={() => confirmDelete(task)}
+                      >
+                        Confirmer
+                      </button>
+                      <button
+                        className="btn btn-secondary btn-sm ms-2"
+                        onClick={cancelDelete}
+                      >
+                        Annuler
+                      </button>
+                    </div>
+                  )}
                 </li>
               ))
             )}

@@ -1,6 +1,5 @@
+// AddAdherentModal.jsx
 import React, { useState } from 'react';
-import { Modal, Button, Form, InputGroup } from 'react-bootstrap';
-import { CircleFadingPlus } from 'lucide-react';
 
 const AddAdherentModal = ({ show, onHide, onAdd }) => {
   const [formData, setFormData] = useState({
@@ -8,130 +7,101 @@ const AddAdherentModal = ({ show, onHide, onAdd }) => {
     prenom: '',
     email: '',
     telephone: '',
+    actif: true,
   });
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const validateForm = () => {
-    const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
-    const phoneRegex = /^\+216[24579]\d{7}$/;
-
-    if (!emailRegex.test(formData.email)) {
-      setError('Email invalide');
-      return false;
-    }
-    if (!phoneRegex.test(formData.telephone.startsWith('+216') ? formData.telephone : '+216' + formData.telephone)) {
-      setError('Numéro de téléphone tunisien invalide');
-      return false;
-    }
-    return true;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
-
-    const formattedData = {
-      ...formData,
-      telephone: formData.telephone.startsWith('+216')
-        ? formData.telephone
-        : '+216' + formData.telephone,
-    };
-
-    if (!validateForm()) return;
-
-    setIsLoading(true);
-    try {
-      await onAdd(formattedData);
-      setFormData({ nom: '', prenom: '', email: '', telephone: '' });
-      onHide();
-    } catch (err) {
-      setError("Une erreur est survenue lors de l'ajout de l'adhérent.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (onAdd) {
+      onAdd(formData);  // Appel à la fonction onAdd qui va passer les données au parent
+      setFormData({ nom: '', prenom: '', email: '', telephone: '', actif: true });  // Réinitialisation du formulaire
+    }
   };
 
   return (
-    <Modal show={show} onHide={onHide} centered>
-      <Modal.Header closeButton>
-        <div className="d-flex align-items-center">
-          <CircleFadingPlus className="me-2 mt-2 text-primary" size={28} />
-          <Modal.Title>Ajouter un Adhérent</Modal.Title>
-        </div>
-      </Modal.Header>
-
-      <Modal.Body>
-        {error && <div className="alert alert-danger">{error}</div>}
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>Nom</Form.Label>
-            <Form.Control
-              type="text"
-              name="nom"
-              value={formData.nom}
-              onChange={handleChange}
-              required
-              placeholder="Entrez le nom"
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Prénom</Form.Label>
-            <Form.Control
-              type="text"
-              name="prenom"
-              value={formData.prenom}
-              onChange={handleChange}
-              required
-              placeholder="Entrez le prénom"
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              placeholder="Exemple@mail.com"
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Téléphone</Form.Label>
-            <InputGroup>
-            <InputGroup.Text>
-              <img
-                src="assets/img/tn.png"
-                alt="Tunisie"
-                style={{ width: '20px', height: '14px', marginRight: '6px' }}
-              />
-              +216
-            </InputGroup.Text>
-
-              <Form.Control
-                type="text"
-                name="telephone"
-                value={formData.telephone}
-                onChange={handleChange}
-                required
-                placeholder="Exemple: 22123456"
-              />
-            </InputGroup>
-          </Form.Group>
-          <div className="d-flex justify-content-center">
-            <Button variant="primary" type="submit" disabled={isLoading}>
-              {isLoading ? 'Ajout en cours...' : 'Ajouter'}
-            </Button>
+    <div className={`modal ${show ? 'd-block' : 'd-none'}`} tabIndex="-1" aria-hidden="true">
+      <div className="modal-dialog">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title">Ajouter un adhérent</h5>
+            <button type="button" className="btn-close" onClick={onHide}></button>
           </div>
-        </Form>
-      </Modal.Body>
-    </Modal>
+          <div className="modal-body">
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label htmlFor="nom" className="form-label">Nom</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="nom"
+                  name="nom"
+                  value={formData.nom}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="prenom" className="form-label">Prénom</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="prenom"
+                  name="prenom"
+                  value={formData.prenom}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="email" className="form-label">Email</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="telephone" className="form-label">Téléphone</label>
+                <input
+                  type="tel"
+                  className="form-control"
+                  id="telephone"
+                  name="telephone"
+                  value={formData.telephone}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="actif" className="form-label">Actif</label>
+                <select
+                  id="actif"
+                  name="actif"
+                  className="form-control"
+                  value={formData.actif}
+                  onChange={handleChange}
+                >
+                  <option value={true}>Oui</option>
+                  <option value={false}>Non</option>
+                </select>
+              </div>
+              <button type="submit" className="btn btn-primary">Ajouter</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

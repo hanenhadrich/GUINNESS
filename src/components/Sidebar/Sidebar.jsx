@@ -12,27 +12,18 @@ const Sidebar = () => {
           <div className="nav">
             <div className="sb-sidenav-menu-heading">Core</div>
             <NavItem link="/home" icon={FaTachometerAlt} label="Dashboard" />
-            <NavItem link="/adherent" icon={FaUserCircle} label="Adhérents" />
+            
 
             <div className="sb-sidenav-menu-heading">Interface</div>
-            <CollapseMenu
-              targetId="collapseLayouts"
-              label="Layouts"
-              icon={FaColumns}
-              subMenus={[
-                { label: "Static Navigation", link: "/unauthorized401" },
-                { label: "Light Sidenav", link: "/layout-sidenav-light" },
-              ]}
-            />
-
+            <NavItem link="/adherent" icon={FaUserCircle} label="Adhérents" />
             <CollapseMenu
               targetId="collapsePages"
-              label="Pages"
+              label="Abonnements"
               icon={FaBookOpen}
               subMenus={[
-                { label: "Login", link: "/login" },
-                { label: "Register", link: "/register" },
-                { label: "Forgot Password", link: "/password" },
+                { label: "Semaine", link: "/login" },
+                { label: "Deux Semaines", link: "/register" },
+                { label: "Mois", link: "/password" },
               ]}
             />
 
@@ -47,9 +38,7 @@ const Sidebar = () => {
               ]}
             />
 
-            <div className="sb-sidenav-menu-heading">Addons</div>
-           
-            <NavItem link="/tables" icon={FaTable} label="Tables" />
+            
           </div>
         </div>
       </nav>

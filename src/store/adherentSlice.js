@@ -1,15 +1,19 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:9090/adherents';
 
-
+// Action pour récupérer les adhérents avec nettoyage des paramètres vides
 export const fetchAdherents = createAsyncThunk(
   'adherents/fetchAdherents',
-  async (_, { rejectWithValue }) => {
+  async (searchParams = {}, { rejectWithValue }) => {
     try {
-      const response = await axios.get(API_URL);
+      const cleanParams = {};
+      if (searchParams.nom) cleanParams.nom = searchParams.nom;
+      if (searchParams.prenom) cleanParams.prenom = searchParams.prenom;
+      if (searchParams.email) cleanParams.email = searchParams.email;
+
+      const response = await axios.get(API_URL, { params: cleanParams });
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -19,7 +23,7 @@ export const fetchAdherents = createAsyncThunk(
   }
 );
 
-
+// Action pour créer un adhérent
 export const createAdherent = createAsyncThunk(
   'adherents/createAdherent',
   async (newAdherent, { rejectWithValue }) => {
@@ -28,13 +32,13 @@ export const createAdherent = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data || 'Erreur lors de la création de l\'adhérent'
+        error.response?.data || "Erreur lors de la création de l'adhérent"
       );
     }
   }
 );
 
-
+// Action pour mettre à jour un adhérent
 export const updateAdherent = createAsyncThunk(
   'adherents/updateAdherent',
   async ({ adherentId, newData }, { rejectWithValue }) => {
@@ -43,13 +47,13 @@ export const updateAdherent = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data || 'Erreur lors de la mise à jour de l\'adhérent'
+        error.response?.data || "Erreur lors de la mise à jour de l'adhérent"
       );
     }
   }
 );
 
-
+// Action pour supprimer un adhérent
 export const deleteAdherent = createAsyncThunk(
   'adherents/deleteAdherent',
   async (adherentId, { rejectWithValue }) => {
@@ -58,12 +62,11 @@ export const deleteAdherent = createAsyncThunk(
       return adherentId;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data || 'Erreur lors de la suppression de l\'adhérent'
+        error.response?.data || "Erreur lors de la suppression de l'adhérent"
       );
     }
   }
 );
-
 
 const adherentSlice = createSlice({
   name: 'adherents',
@@ -74,7 +77,6 @@ const adherentSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      
       .addCase(fetchAdherents.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -87,7 +89,6 @@ const adherentSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      
       .addCase(createAdherent.pending, (state) => {
         state.loading = true;
       })
@@ -99,7 +100,6 @@ const adherentSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      
       .addCase(updateAdherent.pending, (state) => {
         state.loading = true;
       })
@@ -116,7 +116,6 @@ const adherentSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      
       .addCase(deleteAdherent.pending, (state) => {
         state.loading = true;
       })

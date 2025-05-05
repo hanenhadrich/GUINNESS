@@ -1,32 +1,54 @@
 import Adherent from '../models/adherentModel.js';
-import { adherentValidator } from '../validators/adherentValidator.js';  
-
+import { adherentValidator } from '../validators/adherentValidator.js';
 
 export const getAllAdherents = async (req, res) => {
   try {
-    const adherents = await Adherent.find();
+    // Récupérer les paramètres de la requête depuis l'URL (query params)
+    const { nom, prenom, email } = req.query;
+
+    // Créer un objet de filtre de base
+    let query = {};
+
+    // Si un nom est fourni, on ajoute le filtre au query
+    if (nom) {
+      query.nom = { $regex: nom, $options: 'i' }; // Insensible à la casse
+    }
+
+    // Si un prénom est fourni, on ajoute le filtre au query
+    if (prenom) {
+      query.prenom = { $regex: prenom, $options: 'i' };
+    }
+
+    // Si un email est fourni, on ajoute le filtre au query
+    if (email) {
+      query.email = { $regex: email, $options: 'i' };
+    }
+
+    // Si aucun filtre n'est appliqué, la requête renvoie tous les adhérents
+    const adherents = await Adherent.find(query);
+
+    // Répondre avec les adhérents trouvés
     res.json(adherents);
   } catch (error) {
-    console.error("Erreur lors de la récupération des adhérents:", error);
+    console.error("Erreur lors de la récupération des adhérents:", error.message);
     res.status(500).json({ message: 'Erreur interne du serveur', error: error.message });
   }
 };
 
 
-export const createAdherent = async (req, res) => {
-  const { error } = adherentValidator.validate(req.body); 
 
+export const createAdherent = async (req, res) => {
+  const { error } = adherentValidator.validate(req.body);
   if (error) {
     return res.status(400).json({ message: 'Données invalides', details: error.details });
   }
 
   try {
-
+    
     const existingEmail = await Adherent.findOne({ email: req.body.email });
     if (existingEmail) {
       return res.status(400).json({ message: 'Cet email est déjà utilisé par un autre adhérent.' });
     }
-
 
     const existingTelephone = await Adherent.findOne({ telephone: req.body.telephone });
     if (existingTelephone) {
@@ -37,43 +59,45 @@ export const createAdherent = async (req, res) => {
     const savedAdherent = await newAdherent.save();
     res.status(201).json(savedAdherent);
   } catch (error) {
-    console.error("Erreur lors de la création de l'adhérent:", error);
+    console.error("Erreur lors de la création de l'adhérent:", error.message);
     res.status(500).json({ message: "Erreur lors de la création de l'adhérent", error: error.message });
   }
 };
 
-
 export const updateAdherent = async (req, res) => {
   const { adherentId } = req.params;
-
-  const { error } = adherentValidator.validate(req.body); 
+  const { error } = adherentValidator.validate(req.body);
   if (error) {
     return res.status(400).json({ message: 'Données invalides', details: error.details });
   }
 
   try {
+    console.log("Tentative de mise à jour de l'adhérent avec ID:", adherentId);
     const adherent = await Adherent.findById(adherentId);
-    if (!adherent) return res.status(404).json({ message: 'Adhérent non trouvé' });
+    if (!adherent) {
+      return res.status(404).json({ message: 'Adhérent non trouvé' });
+    }
 
-
+    // Vérification des conflits pour l'email et le téléphone
     const existingEmail = await Adherent.findOne({ email: req.body.email, _id: { $ne: adherentId } });
     if (existingEmail) {
       return res.status(400).json({ message: 'Cet email est déjà utilisé par un autre adhérent.' });
     }
-
 
     const existingTelephone = await Adherent.findOne({ telephone: req.body.telephone, _id: { $ne: adherentId } });
     if (existingTelephone) {
       return res.status(400).json({ message: 'Ce numéro de téléphone est déjà utilisé par un autre adhérent.' });
     }
 
-
+    // Mettre à jour l'adhérent avec les nouvelles données
     Object.assign(adherent, req.body);
-
     const updatedAdherent = await adherent.save();
+    console.log("Adhérent mis à jour avec succès:", updatedAdherent);
+
+    // Retourner l'adhérent mis à jour
     res.status(200).json(updatedAdherent);
   } catch (error) {
-    console.error("Erreur lors de la mise à jour de l'adhérent:", error);
+    console.error("Erreur lors de la mise à jour de l'adhérent:", error.message);
     res.status(500).json({ message: "Erreur lors de la mise à jour de l'adhérent", error: error.message });
   }
 };
@@ -84,11 +108,13 @@ export const deleteAdherent = async (req, res) => {
 
   try {
     const adherent = await Adherent.findByIdAndDelete(adherentId);
-    if (!adherent) return res.status(404).json({ message: 'Adhérent non trouvé' });
+    if (!adherent) {
+      return res.status(404).json({ message: 'Adhérent non trouvé' });
+    }
 
     res.status(200).json({ message: 'Adhérent supprimé avec succès' });
   } catch (error) {
-    console.error("Erreur lors de la suppression de l'adhérent:", error);
+    console.error("Erreur lors de la suppression de l'adhérent:", error.message);
     res.status(500).json({ message: "Erreur lors de la suppression de l'adhérent", error: error.message });
   }
 };

@@ -1,92 +1,119 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, InputGroup } from 'react-bootstrap';
-import { ContactRound } from 'lucide-react';
+
 const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate }) => {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    nom: '',
+    prenom: '',
+    email: '',
+    telephone: '',
+    actif: true,
+  });
 
   useEffect(() => {
     if (adherent) {
-      setFormData(adherent);
+      setFormData({
+        _id: adherent._id,
+        nom: adherent.nom,
+        prenom: adherent.prenom,
+        email: adherent.email,
+        telephone: adherent.telephone,
+        actif: adherent.actif,
+      });
     }
   }, [adherent]);
 
-  const handleInputChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onUpdate(formData);
+    if (onUpdate) {
+      const { _id, ...dataSansId } = formData;
+      onUpdate({ ...dataSansId, id: _id }); // Keep the id separate if needed
+    }
   };
 
   return (
-    <Modal show={show} onHide={onHide}>
-      <Modal.Header closeButton>
-        <div className="d-flex align-items-center">
-          <ContactRound className="me-2 mt-2 text-primary" size={28} />
-          <Modal.Title>Mettre à jour l'adhérent</Modal.Title>
+    <div className={`modal ${show ? 'd-block' : 'd-none'}`} tabIndex="-1" aria-hidden={!show}>
+      <div className="modal-dialog">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title">Mettre à jour l'adhérent</h5>
+            <button type="button" className="btn-close" onClick={onHide}></button>
+          </div>
+          <div className="modal-body">
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label htmlFor="nom" className="form-label">Nom</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="nom"
+                  name="nom"
+                  value={formData.nom}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="prenom" className="form-label">Prénom</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="prenom"
+                  name="prenom"
+                  value={formData.prenom}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="email" className="form-label">Email</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="telephone" className="form-label">Téléphone</label>
+                <input
+                  type="tel"
+                  className="form-control"
+                  id="telephone"
+                  name="telephone"
+                  value={formData.telephone}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="actif" className="form-label">Actif</label>
+                <select
+                  id="actif"
+                  name="actif"
+                  className="form-control"
+                  value={formData.actif}
+                  onChange={handleChange}
+                >
+                  <option value={true}>Oui</option>
+                  <option value={false}>Non</option>
+                </select>
+              </div>
+              <button type="submit" className="btn btn-primary">Mettre à jour</button>
+            </form>
+          </div>
         </div>
-      </Modal.Header>
-      <Modal.Body>
-        <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formNom">
-            <Form.Label>Nom</Form.Label>
-            <Form.Control
-              type="text"
-              name="nom"
-              value={formData.nom || ''}
-              onChange={handleInputChange}
-            />
-          </Form.Group>
-
-          <Form.Group controlId="formPrenom">
-            <Form.Label>Prénom</Form.Label>
-            <Form.Control
-              type="text"
-              name="prenom"
-              value={formData.prenom || ''}
-              onChange={handleInputChange}
-            />
-          </Form.Group>
-
-          <Form.Group controlId="formEmail">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              type="email"
-              name="email"
-              value={formData.email || ''}
-              onChange={handleInputChange}
-            />
-          </Form.Group>
-
-          <Form.Group controlId="formTelephone">
-            <Form.Label>Téléphone</Form.Label>
-            <InputGroup>
-            <InputGroup.Text>
-              <img
-                src="assets/img/tn.png"
-                alt="Tunisie"
-                style={{ width: '20px', height: '14px', marginRight: '6px' }}
-              />
-              +216
-            </InputGroup.Text>
-            <Form.Control
-              type="text"
-              name="telephone"
-              value={formData.telephone || ''}
-              onChange={handleInputChange}
-            />
-            </InputGroup>
-          </Form.Group>
-
-          <Modal.Footer className="d-flex justify-content-center" >
-            <Button variant="secondary" onClick={onHide}>Annuler</Button>
-            <Button variant="primary" type="submit">Mettre à jour</Button>
-          </Modal.Footer>
-        </Form>
-      </Modal.Body>
-    </Modal>
+      </div>
+    </div>
   );
 };
 

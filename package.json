@@ -21,6 +21,7 @@
     "express": "^5.1.0",
     "font-awesome": "^4.7.0",
     "joi": "^17.13.3",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.491.0",
     "mongoose": "^8.13.2",
     "react": "^19.0.0",

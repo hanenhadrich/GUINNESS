@@ -25,13 +25,16 @@ export const createTodo = createAsyncThunk('todos/createTodo', async (newTask, {
 
 // Action pour mettre à jour une tâche
 export const updateTodo = createAsyncThunk('todos/updateTodo', async ({ todoId, newData }, { rejectWithValue }) => {
+  console.log("Updating Todo", todoId, newData); // Ajout d'un log pour voir les données envoyées
   try {
     const response = await axios.put(`${API_URL}/${todoId}`, newData);
     return response.data;
   } catch (error) {
+    console.error("Error updating todo:", error); // Log l'erreur détaillée
     return rejectWithValue(error.response?.data || 'Erreur lors de la mise à jour de la tâche');
   }
 });
+
 
 // Action pour supprimer une tâche
 export const deleteTodo = createAsyncThunk('todos/deleteTodo', async (todoId, { rejectWithValue }) => {
