@@ -37,7 +37,7 @@ const SlickSlideshow = () => {
   };
 
   return (
-    <section className="slick-slideshow" style={{ marginTop: '0' }}>
+    <section className="slick-slideshow" >
       <Slider {...settings}>
         {slides.map((slide, index) => (
           <div className="slick-custom" key={index}>

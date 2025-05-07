@@ -26,7 +26,7 @@ const tabs = [
     img: '/assets/images/temps.jpg',
     heading: 'Pack de Coworking',
     text: 'Nous vous offrons des solutions dans nos locaux à l’heure, à la journée ou mensuellement. Des solutions idéales pour vous accompagner vers le succès.',
-    link: 'products',
+    link: 'abonnement',
     linkText: 'Découvrir nos pack'
   }
 ];

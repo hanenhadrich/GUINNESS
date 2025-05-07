@@ -2,7 +2,7 @@
 import React from 'react';
 
 const Header = () => (
-  <header className="site-header section-padding-img site-header-image mt-0">
+  <header className="site-header section-padding-img site-header-image ">
     <div className="container">
       <div className="row">
         <div className="col-lg-10 col-12 header-info">

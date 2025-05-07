@@ -1,7 +1,7 @@
 import React from "react";
 
 const HeroSection = () => (
-  <header className="site-header section-padding d-flex justify-content-center align-items-center" style={{ marginTop: '0'}}>
+  <header className="site-header section-padding d-flex justify-content-center align-items-center" >
     <div className="container">
       <div className="row">
         <div className="col-lg-10 col-12">
