@@ -13,7 +13,7 @@ const SidebarData = [
         icon: <AiIcons.AiFillHome />
     },
     {
-        title: "Adhérentst",
+        title: "Adhérents",
         path: "/adherent",
         icon: <FaIcons.FaUserCircle />,
     },
@@ -45,6 +45,12 @@ const SidebarData = [
         path: "/support",
         icon: <IoIcons.IoMdHelpCircle />,
     },
+    {
+        title: "Deconnexion",
+        path: "/deconnect",
+        icon: <FaIcons.FaTimes />,
+    },
+    
 ];
 
 export default SidebarData;

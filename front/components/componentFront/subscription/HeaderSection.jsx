@@ -1,7 +1,7 @@
 import React from "react";
 
 const HeaderSection = () => (
-  <header className="site-header section-padding-img site-header-image ">
+  <header className="site-header section-padding-img site-header-image mt-0 mt-lg-5">
     <div className="container">
       <div className="row">
         <div className="col-lg-6 col-12 header-info">

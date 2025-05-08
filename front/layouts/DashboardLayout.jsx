@@ -12,7 +12,7 @@ const DashboardLayout = ({ children }) => {
     <div className="d-flex flex-column min-vh-100">
       <Sidebar />
 
-      <main className="flex-grow-1 p-4" style={{ overflowY: 'auto' }}>
+      <main className="flex-grow-1 p-4" style={{ overflowY: 'auto', marginTop: '4rem' }}>
         {children}
       </main>
 
