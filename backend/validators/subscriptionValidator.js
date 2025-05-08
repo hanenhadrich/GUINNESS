@@ -5,6 +5,6 @@ export const subscriptionValidator = Joi.object({
   startDate: Joi.date().required(),
   duration: Joi.number().min(1).required(),
   type: Joi.string().valid('semaine', 'mois', 'an').required(),
-  endDate: Joi.date().optional(), // Autorise endDate s'il est présent
-  status: Joi.string().valid('active', 'inactive').optional() // Ajout du champ status
+  endDate: Joi.date().optional(), 
+  status: Joi.string().valid('active', 'inactive').optional() 
 });

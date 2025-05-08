@@ -8,6 +8,8 @@ import todoRoutes from './backend/routes/todoRoutes.js';
 import reservationRoutes from './backend/routes/reservationRoutes.js'; 
 import adherentRoutes from './backend/routes/adherentRoutes.js';
 import subscriptionRoutes from './backend/routes/subscriptionRoutes.js';
+import subscriptionRoutes from './backend/routes/subscriptionRoutes.js';
+import userRoutes from './backend/routes/userRoutes.js';
 
 dotenv.config();
 
@@ -31,7 +33,20 @@ app.use('/todos', todoRoutes);
 app.use('/reservations', reservationRoutes);
 app.use('/adherents', adherentRoutes);
 app.use('/subscriptions', subscriptionRoutes);
+app.use('/users', userRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+
+
+mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
+        .then(() => {
+            console.log('Successfully connected to MongoDB');
+            app.listen(PORT, () => {
+                console.log(`Server is listening on port ${PORT}`);
+            });
+        })
+        .catch(error => {
+            console.log(error);
+        })
