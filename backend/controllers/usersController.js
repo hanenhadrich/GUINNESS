@@ -8,78 +8,86 @@ const getUsers = async (req, res) => {
     const users = await User.find();
     res.status(200).json(users);
   } catch (error) {
-    console.log(error);
-    res.status(500).json(error)
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
   }
-}
+};
 
 const registerUser = async (req, res) => {
-  try {    
-    // 1) get user information (req.body)
-    // 2) validate req.body (Joi)
-    const validationResult = registerValidator.validate(req.body, { abortEarly: true })
+  try {
+    // Validation des informations utilisateur
+    const validationResult = registerValidator.validate(req.body, { abortEarly: true });
     if (validationResult.error) {
-      return res.status(422).json(validationResult.error)
+      return res.status(422).json(validationResult.error);
     }
-    // 3) check email existence (User model)
+
+    // Vérification de l'existence de l'email
     const userExist = await User.findOne({ email: req.body.email });
     if (userExist) {
-      return res.status(401).json({ error: "An account with this email already exist" })
+      return res.status(400).json({ error: "An account with this email already exists" });
     }
-    // 4) encrypt password
+
+    // Hachage du mot de passe
     const salt = await bcrypt.genSalt(10);
-    const hashedPassowrd = await bcrypt.hash(req.body.password, salt);
-    // 5) create new user
-    const newUser = await User.create({ ...req.body, password: hashedPassowrd });
-    newUser.password = undefined;
-    const token = jwt.sign({ userId: newUser._id}, process.env.JWT_SECRET, { expiresIn: "1d"});
-    res.status(201).json({ 
-      message: "Account successfully created", 
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+    // Création du nouvel utilisateur
+    const newUser = await User.create({ ...req.body, password: hashedPassword });
+    newUser.password = undefined; // Masquer le mot de passe
+
+    // Générer un token JWT
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+
+    res.status(201).json({
+      message: "Account successfully created",
       user: newUser,
       token,
     });
-  } catch (error) {    
-    console.log(error);
-    res.status(500).json(error);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
   }
-}
+};
 
 const loginUser = async (req, res) => {
   try {
-    // 1) get user information (req.body)
-    // 2) validate req.body (Joi)
+    // Validation des informations utilisateur
     const validationResult = loginValidator.validate(req.body, { abortEarly: false });
     if (validationResult.error) {
-      return res.status(422).json(validationResult.error)
-    }    
-    // 3) check email existence (User model)
+      return res.status(422).json(validationResult.error);
+    }
+
+    // Vérification de l'existence de l'utilisateur
     const userExist = await User.findOne({ email: req.body.email });
     if (!userExist) {
-      return res.status(401).json({ error: "Wrong email and/or password" }) // to protect our users privacy
+      return res.status(401).json({ error: "Incorrect email and/or password" });
     }
-    // 4) compare password
+
+    // Vérification du mot de passe
     const passwordMatch = await bcrypt.compare(req.body.password, userExist.password);
-    console.log("passwordMatch: ", passwordMatch);
-    // if (passwordMatch == false || passwordMatch == null || or any other falsy value) {
     if (!passwordMatch) {
-      return res.status(401).json({ error: "Wrong email and/or password" })
+      return res.status(401).json({ error: "Incorrect email and/or password" });
     }
-    // 5) log user in
+
+    // Masquer le mot de passe de la réponse
     userExist.password = undefined;
-    const token = jwt.sign({ userId: userExist._id}, process.env.JWT_SECRET, { expiresIn: "1d"});
+
+    // Générer un token JWT
+    const token = jwt.sign({ userId: userExist._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+
     res.status(200).json({
       message: `Welcome ${userExist.firstName}`,
-      userExist,
-      token
-    })
+      user: userExist,
+      token,
+    });
   } catch (error) {
-    console.log(error);
-    res.status(500).json(error);    
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
   }
-}
+};
 
 module.exports = {
   getUsers,
   registerUser,
-  loginUser
-}
+  loginUser,
+};

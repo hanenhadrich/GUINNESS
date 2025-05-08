@@ -3,27 +3,45 @@ const User = require("../models/userModal");
 
 const checkAuth = async (req, res, next) => {
   try {
-    // get token from headers
-    console.log(req.headers.authorization);
-    const token = req.headers.authorization;
+    // Vérification si le token existe dans les en-têtes
+    const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
+
     if (!token) {
-      return res.status(401).json({ error: "No token provided, authorization denied"});
+      return res.status(401).json({ error: "No token provided, authorization denied" });
     }
-    // decode token
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
-    console.log(decodedToken);
-    // get userId from token payload
+
+    // Décoder le token
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Decoded Token:", decodedToken);
+
+    // Extraire le userId du payload du token
     const userId = decodedToken.userId;
-    // check if user exist
+
+    // Vérifier si l'utilisateur existe dans la base de données
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(401).json({ error: "Invalid token"})
+      return res.status(401).json({ error: "Invalid token, user does not exist" });
     }
+
+    // Ajouter l'utilisateur à la requête pour un accès facile dans les routes suivantes
     req.user = user;
-    next();    
+
+    // Passer au middleware suivant
+    next();
+
   } catch (error) {
-    return res.status(401).json({ error: "Invalid/Expired token" });
+    // Gestion des erreurs liées au token (invalidité ou expiration)
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ error: "Token has expired, please login again" });
+    }
+
+    if (error.name === "JsonWebTokenError") {
+      return res.status(401).json({ error: "Invalid token, authorization denied" });
+    }
+
+    console.error(error);
+    return res.status(500).json({ error: "Something went wrong with the authentication" });
   }
-}
+};
 
 module.exports = checkAuth;

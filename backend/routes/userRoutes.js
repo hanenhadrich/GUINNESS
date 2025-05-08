@@ -1,10 +1,18 @@
-const express = require('express')
+const express = require('express');
+const { register, login } = require('../controllers/usersController');
+const checkAuth = require('../middleware/checkAuth'); // Si tu veux protéger certaines routes par un middleware d'authentification
 
-const { register, login } = require('../controllers/usersController')
+const router = express.Router();
 
-const router = express.Router()
+// Route pour l'enregistrement des utilisateurs
+router.post('/register', register);
 
-router.post('/register', register)
-router.post('/login', login)
+// Route pour la connexion des utilisateurs
+router.post('/login', login);
 
-module.exports = router
+// Exemple d'une route protégée qui nécessite une authentification
+// router.get('/profile', checkAuth, (req, res) => {
+//   res.status(200).json({ user: req.user }); // Utilisation de l'utilisateur décodé à partir du token
+// });
+
+module.exports = router;
