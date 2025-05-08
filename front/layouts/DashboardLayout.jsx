@@ -1,19 +1,23 @@
 import React from 'react';
+// import Navbar from '../components/componentBack/Navbar';
 import Sidebar from '../components/componentBack/Sidebar/Sidebar';
-import Navbar from '../components/componentBack/Navbar';
 import Footer from '../components/componentBack/Footer';
+import '../css/slick.css';
+import '../css/guinnessstyle.css';
+import '../css/App.css';
+import '../css/index.css';
 import '../css/styles.css';
 const DashboardLayout = ({ children }) => {
   return (
-    <div className="d-flex">
+    <div className="d-flex flex-column min-vh-100">
       <Sidebar />
-      <div className="flex-grow-1">
-        <Navbar />
-        <main className="p-4">
-          {children}
-        </main>
-        <Footer />
-      </div>
+
+      <main className="flex-grow-1 p-4" style={{ overflowY: 'auto' }}>
+        {children}
+      </main>
+
+
+      <Footer />
     </div>
   );
 };
