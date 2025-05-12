@@ -30,7 +30,7 @@ const Services = () => {
   return (
     <section style={{ marginTop: '0px', marginBottom: '30px' }} >
       <h2 className="text-center fw-bold" style={{ fontSize: '40px' }}>
-        Nos <span>services</span>
+        Nos <span>Espaces</span>
       </h2>
 
       <div className="detailss" style={{ marginTop: '0px' }}>
