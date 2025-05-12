@@ -39,7 +39,7 @@ export default function ReservationsList() {
     <div className="col-xl-6 col-md-12 mb-4">
       <div className="card bg-success text-white">
         <div className="card-body">
-          <h5>Réservations</h5>
+          <h5 className="text-white">Réservations</h5>
           <form onSubmit={handleAddReservation} className="mt-3">
             <div className="input-group">
               <input
