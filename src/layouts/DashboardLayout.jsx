@@ -1,6 +1,7 @@
-import React from 'react';
+;
 import Sidebar from '../components/componentBack/Sidebar/Sidebar';
 import Footer from '../components/componentBack/Footer';
+import BackToTopButton from '../components/componentFront/BackToTopButton';
 import '../css/slick.css';
 import '../css/guinnessstyle.css';
 import '../css/App.css';
@@ -17,6 +18,7 @@ const DashboardLayout = ({ children }) => {
 
 
       <Footer />
+      <BackToTopButton />
     </div>
   );
 };

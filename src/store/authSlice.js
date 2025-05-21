@@ -85,12 +85,12 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         localStorage.setItem("token", action.payload.token);
         localStorage.setItem("userDetails", JSON.stringify(action.payload.user));
-        alertSuccess(action.payload.message);
+        // alertSuccess(action.payload.message);
       })
       .addCase(requestLogin.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-        alertError(action.payload);
+        // alertError(action.payload);
       })
 
     
