@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { clearError, clearSuccess } from '../../store/adherentSlice'; // ajuste le chemin
 
 const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate }) => {
+  const dispatch = useDispatch();
+
+  // State local du formulaire
   const [formData, setFormData] = useState({
+    _id: '',
     nom: '',
     prenom: '',
     email: '',
@@ -9,47 +15,95 @@ const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate }) => {
     actif: true,
   });
 
+  // Récupération du state Redux pour erreurs, succès et loading
+  const { error, success, loading } = useSelector((state) => state.adherents);
+
+  // Lorsqu'on ouvre le modal avec un adherent à modifier, on remplit le form
   useEffect(() => {
     if (adherent) {
       setFormData({
         _id: adherent._id,
-        nom: adherent.nom,
-        prenom: adherent.prenom,
-        email: adherent.email,
-        telephone: adherent.telephone,
-        actif: adherent.actif,
+        nom: adherent.nom || '',
+        prenom: adherent.prenom || '',
+        email: adherent.email || '',
+        telephone: adherent.telephone || '',
+        actif: adherent.actif ?? true,
       });
     }
   }, [adherent]);
 
+  // Nettoyer erreurs/success à la fermeture du modal
+  useEffect(() => {
+    if (!show) {
+      dispatch(clearError());
+      dispatch(clearSuccess());
+    }
+  }, [show, dispatch]);
+
+  // Gestion changement champs
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (onUpdate) {
-      const { _id, ...dataSansId } = formData;
-      onUpdate({ ...dataSansId, id: _id }); 
+    // Pour 'actif', convertir string 'true'/'false' en bool
+    if (name === 'actif') {
+      setFormData((prev) => ({
+        ...prev,
+        actif: value === 'true',
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     }
   };
 
+  // Soumission formulaire
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (onUpdate) {
+      onUpdate(formData);
+    }
+  };
+
+  if (!show) return null;
+
   return (
-    <div className={`modal ${show ? 'd-block' : 'd-none'}`} tabIndex="-1" aria-hidden={!show}>
+    <div
+      className="modal d-block"
+      tabIndex="-1"
+      aria-modal="true"
+      role="dialog"
+      aria-labelledby="updateAdherentModalLabel"
+    >
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">Mettre à jour l'adhérent</h5>
-            <button type="button" className="btn-close" onClick={onHide}></button>
+            <h5 className="modal-title" id="updateAdherentModalLabel">
+              Mettre à jour l'adhérent
+            </h5>
+            <button
+              type="button"
+              className="btn-close"
+              aria-label="Fermer"
+              onClick={onHide}
+            />
           </div>
           <div className="modal-body">
+            {error && (
+              <div className="alert alert-danger">
+                {Array.isArray(error.general)
+                  ? error.general.map((err, i) => <div key={i}>{err}</div>)
+                  : error.general || 'Erreur'}
+              </div>
+            )}
+            {success && <div className="alert alert-success">{success}</div>}
+
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
-                <label htmlFor="nom" className="form-label">Nom</label>
+                <label htmlFor="nom" className="form-label">
+                  Nom
+                </label>
                 <input
                   type="text"
                   className="form-control"
@@ -60,8 +114,11 @@ const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate }) => {
                   required
                 />
               </div>
+
               <div className="mb-3">
-                <label htmlFor="prenom" className="form-label">Prénom</label>
+                <label htmlFor="prenom" className="form-label">
+                  Prénom
+                </label>
                 <input
                   type="text"
                   className="form-control"
@@ -72,8 +129,11 @@ const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate }) => {
                   required
                 />
               </div>
+
               <div className="mb-3">
-                <label htmlFor="email" className="form-label">Email</label>
+                <label htmlFor="email" className="form-label">
+                  Email
+                </label>
                 <input
                   type="email"
                   className="form-control"
@@ -84,11 +144,16 @@ const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate }) => {
                   required
                 />
               </div>
-             
+
               <div className="mb-3">
-                <label htmlFor="telephone" className="form-label">Téléphone</label>
+                <label htmlFor="telephone" className="form-label">
+                  Téléphone
+                </label>
                 <div className="input-group">
-                  <span className="input-group-text" style={{ backgroundColor: 'white' }}>
+                  <span
+                    className="input-group-text"
+                    style={{ backgroundColor: 'white' }}
+                  >
                     <img
                       src="assets/img/tn.png"
                       alt="Drapeau Tunisie"
@@ -107,23 +172,32 @@ const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate }) => {
                   />
                 </div>
               </div>
+
               <div className="mb-3">
-                <label htmlFor="actif" className="form-label">Actif</label>
+                <label htmlFor="actif" className="form-label">
+                  Actif
+                </label>
                 <select
                   id="actif"
                   name="actif"
                   className="form-control"
-                  value={formData.actif}
+                  value={formData.actif ? 'true' : 'false'}
                   onChange={handleChange}
                 >
-                  <option value={true}>Oui</option>
-                  <option value={false}>Non</option>
+                  <option value="true">Oui</option>
+                  <option value="false">Non</option>
                 </select>
               </div>
+
               <div className="text-center">
-                <button type="submit" className="btn btn-primary d-inline-block">Mettre à jour</button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={loading}
+                >
+                  {loading ? 'En cours...' : 'Mettre à jour'}
+                </button>
               </div>
-              
             </form>
           </div>
         </div>

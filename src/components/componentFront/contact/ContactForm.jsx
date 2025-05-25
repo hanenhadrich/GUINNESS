@@ -51,7 +51,7 @@ const ContactForm = () => (
       <div className="input-group">
         <span className="input-group-text" id="phone-addon">
           <img
-            src="https://flagicons.lipis.dev/flags/4x3/tn.svg"
+            src="assets/img/tn.svg"
             alt="Tunisia Flag"
             style={{ width: '20px', height: 'auto', marginRight: '5px' }}
           />

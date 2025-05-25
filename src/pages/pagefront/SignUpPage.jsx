@@ -4,9 +4,9 @@ import GeneralLayout from "../../layouts/GeneralLayout";
 const HomePage = () => {
   return (
     <>
-    <GeneralLayout>
+    
     <SignUpForm />
-    </GeneralLayout>
+    
    </>
   );
 };

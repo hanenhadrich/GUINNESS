@@ -1,10 +1,11 @@
+// src/features/authSlice.js
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { alertError, alertSuccess, extractErrorMessage } from "../utilities/feedback";
 
-
 const token = localStorage.getItem("token");
 const userDetails = localStorage.getItem("userDetails");
+const tokenExpiration = localStorage.getItem("tokenExpiration");
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:9090';
 
 export const requestLogin = createAsyncThunk(
@@ -18,7 +19,6 @@ export const requestLogin = createAsyncThunk(
     }
   }
 );
-
 
 export const requestRegister = createAsyncThunk(
   "users/register",
@@ -37,12 +37,10 @@ export const requestRegister = createAsyncThunk(
   }
 );
 
-
-
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    isAuthenticated: !!token,
+    isAuthenticated: !!token && Date.now() < Number(tokenExpiration),
     token: token || null,
     user: userDetails ? JSON.parse(userDetails) : null,
     isLoading: false,
@@ -56,6 +54,7 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       localStorage.setItem("token", action.payload.token);
       localStorage.setItem("userDetails", JSON.stringify(action.payload.user));
+      localStorage.setItem("tokenExpiration", (Date.now() + 60 * 60 * 1000).toString()); // 1h
     },
     logout: (state) => {
       state.isAuthenticated = false;
@@ -63,6 +62,7 @@ const authSlice = createSlice({
       state.user = null;
       localStorage.removeItem("token");
       localStorage.removeItem("userDetails");
+      localStorage.removeItem("tokenExpiration");
     },
     clearError: (state) => {
       state.error = null;
@@ -73,7 +73,6 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      
       .addCase(requestLogin.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -85,15 +84,12 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         localStorage.setItem("token", action.payload.token);
         localStorage.setItem("userDetails", JSON.stringify(action.payload.user));
-        // alertSuccess(action.payload.message);
+        localStorage.setItem("tokenExpiration", (Date.now() + 60 * 60 * 1000).toString());
       })
       .addCase(requestLogin.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-        // alertError(action.payload);
       })
-
-    
       .addCase(requestRegister.pending, (state) => {
         state.isLoading = true;
         state.error = null;

@@ -5,9 +5,9 @@ import GeneralLayout from "../../layouts/GeneralLayout";
 const SignInPage = () => {
   return (
     <>
-    <GeneralLayout>
+    
     <SignInForm />
-    </GeneralLayout>
+    
    </>
   );
 };

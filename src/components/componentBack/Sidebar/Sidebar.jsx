@@ -11,9 +11,9 @@ const Nav = styled.div`
   background: #15171c;
   height: 80px;
   display: flex;
-  justify-content: space-between; /* Espace entre burger et logo */
+  justify-content: space-between;
   align-items: center;
-  padding: 0 2rem; /* Un peu de marge intérieure */
+  padding: 0 2rem;
   position: fixed;
   width: 100%;
   top: 0;
@@ -52,7 +52,8 @@ const SidebarWrap = styled.div`
 const Sidebar = () => {
   const [sidebar, setSidebar] = useState(false);
 
-  const showSidebar = () => setSidebar(!sidebar);
+  const showSidebar = () => setSidebar(true);
+  const hideSidebar = () => setSidebar(false);
 
   return (
     <>
@@ -61,17 +62,18 @@ const Sidebar = () => {
           <NavIcon to="#">
             <FaIcons.FaBars onClick={showSidebar} />
           </NavIcon>
+
           <Link
             className="navbar-brand d-flex align-items-center"
             to="/"
             style={{ fontSize: "14px", color: "white" }}
           >
             <img
-              src="assets/img/GN-Photoroom.png"
+              src="/assets/img/GN-Photoroom.png"
               alt="Guinness Co-working Space"
               style={{ height: "40px", borderRadius: "50%" }}
             />
-            <div className="d-flex flex-column">
+            <div className="d-flex flex-column ms-2">
               <span style={{ fontWeight: "bold", textAlign: "center" }}>
                 GUINNESS
               </span>
@@ -79,25 +81,34 @@ const Sidebar = () => {
             </div>
           </Link>
         </Nav>
-        <SidebarNav $sidebar={sidebar}>
+
+        {/* Ici on ferme la sidebar quand la souris quitte la zone */}
+        <SidebarNav $sidebar={sidebar} onMouseLeave={hideSidebar}>
           <SidebarWrap>
             <NavIcon to="#">
-              <AiIcons.AiOutlineClose onClick={showSidebar} />
+              <AiIcons.AiOutlineClose onClick={hideSidebar} />
             </NavIcon>
 
-            {SidebarData.map((item, index) => {
-              return (
-                item.title !== "Deconnexion" && <SubMenu item={item} key={index} />
-              );
-            })}
+            {SidebarData.map((item, index) =>
+              item.title !== "Deconnexion" ? (
+                <SubMenu
+                  item={item}
+                  key={index}
+                  toggleSidebar={hideSidebar}
+                />
+              ) : null
+            )}
 
             <div style={{ marginTop: "auto" }}>
-              {SidebarData.map((item, index) => {
-                if (item.title === "Deconnexion") {
-                  return <SubMenu item={item} key={index} />;
-                }
-                return null;
-              })}
+              {SidebarData.map((item, index) =>
+                item.title === "Deconnexion" ? (
+                  <SubMenu
+                    item={item}
+                    key={index}
+                    toggleSidebar={hideSidebar}
+                  />
+                ) : null
+              )}
             </div>
           </SidebarWrap>
         </SidebarNav>

@@ -6,11 +6,11 @@ import Testimonial from "../../components/componentFront/about/Testimonial";
 
 const AboutPage = () => {
   return (
-    <GeneralLayout>
+    <>
       <HeroSection />
       <Testimonial />
       <Services />
-    </GeneralLayout>
+   </> 
   );
 };
 

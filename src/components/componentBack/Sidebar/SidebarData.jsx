@@ -11,7 +11,7 @@ const SidebarData = [
     },
     {
         title: "Adhérents",
-        path: "/adherent",
+        path: "/adherents",
         icon: <FaIcons.FaUserCircle />,
     },
     {

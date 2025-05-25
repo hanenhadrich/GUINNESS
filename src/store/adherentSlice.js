@@ -3,56 +3,66 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:9090/adherents';
 
-
 const cleanParams = (params) => {
   return Object.keys(params).reduce((acc, key) => {
-    if (params[key]) acc[key] = params[key];
+    if (params[key] !== undefined && params[key] !== null && params[key] !== '') {
+      acc[key] = params[key];
+    }
     return acc;
   }, {});
 };
-
 
 export const fetchAdherents = createAsyncThunk(
   'adherents/fetchAdherents',
   async (searchParams = {}, { rejectWithValue }) => {
     try {
-      const cleanParamsObj = cleanParams(searchParams); 
+      const cleanParamsObj = cleanParams(searchParams);
       const response = await axios.get(API_URL, { params: cleanParamsObj });
       return response.data;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data || 'Erreur lors de la récupération des adhérents'
-      );
+      return rejectWithValue(error.response?.data || { general: 'Erreur lors de la récupération des adhérents' });
     }
   }
 );
 
-
 export const createAdherent = createAsyncThunk(
-  'adherents/createAdherent',
-  async (newAdherent, { rejectWithValue }) => {
+  'adherents/create',
+  async (adherent, { rejectWithValue }) => {
     try {
-      const response = await axios.post(API_URL, newAdherent);
+      const response = await axios.post(API_URL, adherent);
       return response.data;
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data || "Erreur lors de la création de l'adhérent"
-      );
+    } catch (err) {
+      const data = err.response?.data;
+
+      // Si backend renvoie un tableau d'erreurs
+      if (Array.isArray(data)) {
+        return rejectWithValue({ general: data });
+      }
+
+      // Si backend renvoie un objet d'erreurs
+      if (typeof data === 'object') {
+        return rejectWithValue(data);
+      }
+
+      // Sinon erreur inconnue
+      return rejectWithValue({ general: ['Erreur inconnue'] });
     }
   }
 );
 
 
 export const updateAdherent = createAsyncThunk(
-  'adherents/updateAdherent',
-  async ({ adherentId, newData }, { rejectWithValue }) => {
+  'adherents/update',
+  async (adherent, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`${API_URL}/${adherentId}`, newData);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data || "Erreur lors de la mise à jour de l'adhérent"
-      );
+      const { _id, ...dataToUpdate } = adherent; // enlever _id du corps
+      const res = await axios.put(`${API_URL}/${_id}`, dataToUpdate);
+      return res.data;
+    } catch (err) {
+      if (err.response?.data) {
+        return rejectWithValue(err.response.data);
+      }
+      return rejectWithValue({ general: 'Erreur inconnue' });
     }
   }
 );
@@ -65,12 +75,11 @@ export const deleteAdherent = createAsyncThunk(
       await axios.delete(`${API_URL}/${adherentId}`);
       return adherentId;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data || "Erreur lors de la suppression de l'adhérent"
-      );
+      return rejectWithValue(error.response?.data || { general: "Erreur lors de la suppression de l'adhérent" });
     }
   }
 );
+
 
 const adherentSlice = createSlice({
   name: 'adherents',
@@ -78,66 +87,100 @@ const adherentSlice = createSlice({
     list: [],
     loading: false,
     error: null,
+    success: null,
+  },
+  reducers: {
+    clearError: (state) => {
+      state.error = null;
+    },
+    clearSuccess: (state) => {
+      state.success = null;
+    },
+    resetAdherents: (state) => {
+      state.list = [];
+      state.loading = false;
+      state.error = null;
+      state.success = null;
+    },
   },
   extraReducers: (builder) => {
     builder
+      // Fetch
       .addCase(fetchAdherents.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.success = null;
       })
       .addCase(fetchAdherents.fulfilled, (state, action) => {
         state.loading = false;
         state.list = action.payload;
+        state.error = null;
+        state.success = null;
       })
       .addCase(fetchAdherents.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || { general: 'Erreur inattendue' };
+        state.success = null;
       })
+
+      // Create
       .addCase(createAdherent.pending, (state) => {
         state.loading = true;
+        state.error = null;
+        state.success = null;
       })
       .addCase(createAdherent.fulfilled, (state, action) => {
         state.loading = false;
         state.list.push(action.payload);
+        state.error = null;
+        state.success = 'Adhérent ajouté avec succès !';
       })
       .addCase(createAdherent.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || { general: 'Erreur inconnue' };
+        state.success = null;
       })
+
+      // Update
       .addCase(updateAdherent.pending, (state) => {
         state.loading = true;
+        state.error = null;
+        state.success = null;
       })
       .addCase(updateAdherent.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.list.findIndex(
-          (adherent) => adherent._id === action.payload._id
-        );
+        const index = state.list.findIndex((adherent) => adherent._id === action.payload._id);
         if (index !== -1) {
           state.list[index] = action.payload;
         }
+        state.error = null;
+        state.success = 'Adhérent mis à jour avec succès !';
       })
       .addCase(updateAdherent.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || { general: "Erreur lors de la mise à jour" };
+        state.success = null;
       })
+
+      // Delete
       .addCase(deleteAdherent.pending, (state) => {
         state.loading = true;
+        state.error = null;
+        state.success = null;
       })
       .addCase(deleteAdherent.fulfilled, (state, action) => {
         state.loading = false;
-        state.list = state.list.filter(
-          (adherent) => adherent._id !== action.payload
-        );
+        state.list = state.list.filter((adherent) => adherent._id !== action.payload);
+        state.error = null;
+        state.success = 'Adhérent supprimé avec succès !';
       })
       .addCase(deleteAdherent.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || { general: "Erreur lors de la suppression" };
+        state.success = null;
       });
   },
 });
 
-export const selectAdherents = (state) => state.adherents.list;
-export const selectAdherentsLoading = (state) => state.adherents.loading;
-export const selectAdherentsError = (state) => state.adherents.error;
-
+export const { clearError, clearSuccess, resetAdherents } = adherentSlice.actions;
 export default adherentSlice.reducer;

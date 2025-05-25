@@ -9,11 +9,11 @@ import GeneralLayout from "../../layouts/GeneralLayout";
 const SubscriptionPage = () => {
   return (
     <>
-    <GeneralLayout>
+    
     <HeaderSection />
     <BookingSection />
     <SubscriptionSection />
-    </GeneralLayout>
+    
     </>
   );
 };
