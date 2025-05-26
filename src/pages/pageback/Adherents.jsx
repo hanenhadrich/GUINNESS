@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { FaSearch } from 'react-icons/fa';
 import {
   fetchAdherents,
   deleteAdherent,
@@ -31,7 +30,6 @@ const Adherents = () => {
   const [searchField, setSearchField] = useState('nom');
   const [searchValue, setSearchValue] = useState('');
 
-  // Erreurs spécifiques à l'ajout par champ
   const [addError, setAddError] = useState(null);
 
   useEffect(() => {
@@ -41,7 +39,7 @@ const Adherents = () => {
   useEffect(() => {
     if (error && !addError) {
       if (Array.isArray(error)) {
-        error.forEach((msg) => toast.error(msg.message || msg));
+        error.forEach((msg) => toast.error(msg));
       } else if (typeof error === 'object' && error.message) {
         toast.error(error.message);
       } else {
@@ -49,6 +47,7 @@ const Adherents = () => {
       }
       dispatch(clearError());
     }
+
     if (success) {
       toast.success(success);
       dispatch(clearSuccess());
@@ -65,20 +64,15 @@ const Adherents = () => {
   }, [list, searchField, searchValue]);
 
   const handleDelete = async () => {
-  if (!adherentToDelete) return;
-
-  console.log('ID à supprimer:', adherentToDelete); // adherentToDelete est un string ici
-
-  try {
-    await dispatch(deleteAdherent(adherentToDelete)).unwrap(); // direct string ID
-    setShowModal(false);
-    setAdherentToDelete(null);
-  } catch {
-    toast.error('Erreur lors de la suppression');
-  }
-};
-
-
+    if (!adherentToDelete) return;
+    try {
+      await dispatch(deleteAdherent(adherentToDelete)).unwrap();
+      setShowModal(false);
+      setAdherentToDelete(null);
+    } catch {
+      toast.error('Erreur lors de la suppression');
+    }
+  };
 
   const handleUpdate = async (updatedAdherent) => {
     try {
@@ -90,35 +84,48 @@ const Adherents = () => {
     }
   };
 
-  // Ajout avec gestion des erreurs précises
   const handleAdd = async (newAdherent) => {
-    try {
-      setAddError(null);
-      await dispatch(createAdherent(newAdherent)).unwrap();
-      setShowAddModal(false);
-    } catch (err) {
-      let errorsObj = {};
-      if (err?.code === 11000 && err?.keyPattern?.email) {
-        errorsObj.email = 'Cet email est déjà utilisé par un autre adhérent.';
-      } else if (Array.isArray(err?.details)) {
-        err.details.forEach((detail) => {
-          const field = detail.path?.[0];
-          if (field) errorsObj[field] = detail.message;
-        });
-      } else if (typeof err?.message === 'string') {
-        errorsObj.general = err.message;
-      } else {
-        errorsObj.general = "Erreur inconnue lors de l'ajout.";
-      }
+  try {
+    setAddError(null);
+    await dispatch(createAdherent(newAdherent)).unwrap();
+    setShowAddModal(false);
+  } catch (err) {
+    console.log("Erreur brute reçue dans handleAdd:", err);
+
+    // Si tu utilises axios, l'erreur peut être dans err.response.data
+    const responseData = err?.response?.data || err;
+
+    console.log("Données d'erreur extraites:", responseData);
+
+    if (Array.isArray(responseData)) {
+      const errorsObj = {};
+      responseData.forEach(msg => {
+        if (msg.toLowerCase().includes('email')) {
+          errorsObj.email = msg;
+        } else if (msg.toLowerCase().includes('téléphone') || msg.toLowerCase().includes('telephone')) {
+          errorsObj.telephone = msg;
+        } else {
+          errorsObj.general = errorsObj.general ? errorsObj.general + " " + msg : msg;
+        }
+      });
       setAddError(errorsObj);
+    } else if (typeof responseData === 'string') {
+      setAddError({ general: responseData });
+    } else if (typeof responseData === 'object' && responseData !== null) {
+      // Si backend envoie objet avec clefs spécifiques, adapte ici
+      setAddError(responseData);
+    } else {
+      setAddError({ general: "Erreur inconnue lors de l'ajout." });
     }
-  };
+  }
+};
+
 
   return (
     <main className="container-fluid px-4" style={{ margin: '10px' }}>
       <div className="card shadow-lg mb-4" style={{ marginLeft: '40px', marginRight: '40px' }}>
-        <div className="container mt-3 ">
-          <h2 className="mb-4 ">
+        <div className="container mt-3">
+          <h2 className="mb-4">
             <Users className="mb-1 me-2" />
             Gestion des Adhérents
           </h2>
@@ -181,7 +188,6 @@ const Adherents = () => {
               adherentFirstName={adherentToDelete?.prenom}
             />
           )}
-
 
           {showUpdateModal && adherentToUpdate && (
             <UpdateAdherentModal

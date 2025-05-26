@@ -20,7 +20,10 @@ export const fetchAdherents = createAsyncThunk(
       const response = await axios.get(API_URL, { params: cleanParamsObj });
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || { general: 'Erreur lors de la récupération des adhérents' });
+      return rejectWithValue(
+        error.response?.data || 
+        { general: error.message || 'Erreur lors de la récupération des adhérents' }
+      );
     }
   }
 );
@@ -34,28 +37,24 @@ export const createAdherent = createAsyncThunk(
     } catch (err) {
       const data = err.response?.data;
 
-      // Si backend renvoie un tableau d'erreurs
       if (Array.isArray(data)) {
         return rejectWithValue({ general: data });
       }
 
-      // Si backend renvoie un objet d'erreurs
       if (typeof data === 'object') {
         return rejectWithValue(data);
       }
 
-      // Sinon erreur inconnue
       return rejectWithValue({ general: ['Erreur inconnue'] });
     }
   }
 );
 
-
 export const updateAdherent = createAsyncThunk(
   'adherents/update',
   async (adherent, { rejectWithValue }) => {
     try {
-      const { _id, ...dataToUpdate } = adherent; // enlever _id du corps
+      const { _id, ...dataToUpdate } = adherent;
       const res = await axios.put(`${API_URL}/${_id}`, dataToUpdate);
       return res.data;
     } catch (err) {
@@ -67,7 +66,6 @@ export const updateAdherent = createAsyncThunk(
   }
 );
 
-
 export const deleteAdherent = createAsyncThunk(
   'adherents/deleteAdherent',
   async (adherentId, { rejectWithValue }) => {
@@ -75,11 +73,12 @@ export const deleteAdherent = createAsyncThunk(
       await axios.delete(`${API_URL}/${adherentId}`);
       return adherentId;
     } catch (error) {
-      return rejectWithValue(error.response?.data || { general: "Erreur lors de la suppression de l'adhérent" });
+      return rejectWithValue(
+        error.response?.data || { general: "Erreur lors de la suppression de l'adhérent" }
+      );
     }
   }
 );
-
 
 const adherentSlice = createSlice({
   name: 'adherents',
@@ -88,6 +87,7 @@ const adherentSlice = createSlice({
     loading: false,
     error: null,
     success: null,
+    selectedAdherent: null,
   },
   reducers: {
     clearError: (state) => {
@@ -101,6 +101,13 @@ const adherentSlice = createSlice({
       state.loading = false;
       state.error = null;
       state.success = null;
+      state.selectedAdherent = null;
+    },
+    setSelectedAdherent: (state, action) => {
+      state.selectedAdherent = action.payload;
+    },
+    clearSelectedAdherent: (state) => {
+      state.selectedAdherent = null;
     },
   },
   extraReducers: (builder) => {
@@ -113,11 +120,13 @@ const adherentSlice = createSlice({
       })
       .addCase(fetchAdherents.fulfilled, (state, action) => {
         state.loading = false;
-        state.list = action.payload;
+        // Tri alphabétique sur nom
+        state.list = action.payload.slice().sort((a, b) => a.nom.localeCompare(b.nom));
         state.error = null;
         state.success = null;
       })
       .addCase(fetchAdherents.rejected, (state, action) => {
+        console.error('Fetch adherents error:', action.payload);
         state.loading = false;
         state.error = action.payload || { general: 'Erreur inattendue' };
         state.success = null;
@@ -136,6 +145,7 @@ const adherentSlice = createSlice({
         state.success = 'Adhérent ajouté avec succès !';
       })
       .addCase(createAdherent.rejected, (state, action) => {
+        console.error('Create adherent error:', action.payload);
         state.loading = false;
         state.error = action.payload || { general: 'Erreur inconnue' };
         state.success = null;
@@ -157,6 +167,7 @@ const adherentSlice = createSlice({
         state.success = 'Adhérent mis à jour avec succès !';
       })
       .addCase(updateAdherent.rejected, (state, action) => {
+        console.error('Update adherent error:', action.payload);
         state.loading = false;
         state.error = action.payload || { general: "Erreur lors de la mise à jour" };
         state.success = null;
@@ -175,6 +186,7 @@ const adherentSlice = createSlice({
         state.success = 'Adhérent supprimé avec succès !';
       })
       .addCase(deleteAdherent.rejected, (state, action) => {
+        console.error('Delete adherent error:', action.payload);
         state.loading = false;
         state.error = action.payload || { general: "Erreur lors de la suppression" };
         state.success = null;
@@ -182,5 +194,12 @@ const adherentSlice = createSlice({
   },
 });
 
-export const { clearError, clearSuccess, resetAdherents } = adherentSlice.actions;
+export const {
+  clearError,
+  clearSuccess,
+  resetAdherents,
+  setSelectedAdherent,
+  clearSelectedAdherent,
+} = adherentSlice.actions;
+
 export default adherentSlice.reducer;
