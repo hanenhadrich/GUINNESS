@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Modal, Button, Form, InputGroup } from 'react-bootstrap';
+import { FaUser, FaEnvelope, FaPhone } from 'react-icons/fa';
 
 const AddAdherentModal = ({ show, onHide, onAdd, error }) => {
   const [formData, setFormData] = useState({
@@ -10,13 +12,20 @@ const AddAdherentModal = ({ show, onHide, onAdd, error }) => {
 
   useEffect(() => {
     if (!show) {
-      // reset formulaire quand modal est fermée
-      setFormData({ nom: '', prenom: '', email: '', telephone: '' });
+      setFormData({
+        nom: '',
+        prenom: '',
+        email: '',
+        telephone: '',
+      });
     }
   }, [show]);
 
   const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -24,83 +33,129 @@ const AddAdherentModal = ({ show, onHide, onAdd, error }) => {
     onAdd(formData);
   };
 
-  if (!show) return null;
+  const renderErrors = (field) => {
+    if (!error || !error[field]) return null;
+    if (Array.isArray(error[field])) {
+      return error[field].map((msg, idx) => (
+        <Form.Control.Feedback key={idx} type="invalid" style={{ display: 'block' }}>
+          {msg}
+        </Form.Control.Feedback>
+      ));
+    }
+    return (
+      <Form.Control.Feedback type="invalid" style={{ display: 'block' }}>
+        {error[field]}
+      </Form.Control.Feedback>
+    );
+  };
+
+  const renderGeneralErrors = () => {
+    if (!error?.general) return null;
+    if (Array.isArray(error.general)) {
+      return error.general.map((msg, idx) => (
+        <div key={idx} className="alert alert-danger py-2 mb-3">
+          {msg}
+        </div>
+      ));
+    }
+    return <div className="alert alert-danger py-2 mb-3">{error.general}</div>;
+  };
 
   return (
-    <div className="modal show d-block" tabIndex="-1" role="dialog">
-      <div className="modal-dialog" role="document">
-        <form onSubmit={handleSubmit}>
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Ajouter un adhérent</h5>
-              <button type="button" className="btn-close" aria-label="Close" onClick={onHide} />
-            </div>
-            <div className="modal-body">
-              <div className="mb-3">
-                <label htmlFor="nom" className="form-label">Nom</label>
-                <input
-                  id="nom"
-                  name="nom"
-                  type="text"
-                  className="form-control"
-                  value={formData.nom}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+    <Modal show={show} onHide={onHide} centered size="md" backdrop="static" keyboard={false}>
+      <Modal.Header>
+        <Modal.Title>Ajouter un adhérent</Modal.Title>
+      </Modal.Header>
 
-              <div className="mb-3">
-                <label htmlFor="prenom" className="form-label">Prénom</label>
-                <input
-                  id="prenom"
-                  name="prenom"
-                  type="text"
-                  className="form-control"
-                  value={formData.prenom}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+      <Modal.Body style={{ backgroundColor: '#f9f9f9' }}>
+        {renderGeneralErrors()}
+        <Form noValidate onSubmit={handleSubmit}>
 
-              <div className="mb-3">
-                <label htmlFor="email" className="form-label">Email</label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  className={`form-control ${error?.email ? 'is-invalid' : ''}`}
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-                {error?.email && <div className="invalid-feedback">{error.email}</div>}
-              </div>
+          <Form.Group className="mb-4" controlId="nom">
+            <Form.Label>Nom*</Form.Label>
+            <InputGroup>
+              <InputGroup.Text><FaUser /></InputGroup.Text>
+              <Form.Control
+                type="text"
+                name="nom"
+                value={formData.nom}
+                onChange={handleChange}
+                isInvalid={!!error?.nom}
+                placeholder="Entrez le nom"
+              />
+              {renderErrors('nom')}
+            </InputGroup>
+          </Form.Group>
 
-              <div className="mb-3">
-                <label htmlFor="telephone" className="form-label">Téléphone</label>
-                <input
-                  id="telephone"
-                  name="telephone"
-                  type="text"
-                  className={`form-control ${error?.telephone ? 'is-invalid' : ''}`}
-                  value={formData.telephone}
-                  onChange={handleChange}
-                  required
-                />
-                {error?.telephone && <div className="invalid-feedback">{error.telephone}</div>}
-              </div>
+          <Form.Group className="mb-4" controlId="prenom">
+            <Form.Label>Prénom*</Form.Label>
+            <InputGroup>
+              <InputGroup.Text><FaUser /></InputGroup.Text>
+              <Form.Control
+                type="text"
+                name="prenom"
+                value={formData.prenom}
+                onChange={handleChange}
+                isInvalid={!!error?.prenom}
+                placeholder="Entrez le prénom"
+              />
+              {renderErrors('prenom')}
+            </InputGroup>
+          </Form.Group>
 
-              {error?.general && <div className="alert alert-danger">{error.general}</div>}
-            </div>
+          <Form.Group className="mb-4" controlId="email">
+            <Form.Label>Email*</Form.Label>
+            <InputGroup>
+              <InputGroup.Text><FaEnvelope /></InputGroup.Text>
+              <Form.Control
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                isInvalid={!!error?.email}
+                placeholder="exemple@domaine.com"
+              />
+              {renderErrors('email')}
+            </InputGroup>
+          </Form.Group>
 
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={onHide}>Annuler</button>
-              <button type="submit" className="btn btn-primary">Ajouter</button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+          <Form.Group className="mb-4" controlId="telephone">
+            <Form.Label>Téléphone</Form.Label>
+            <InputGroup>
+              <InputGroup.Text><FaPhone /></InputGroup.Text>
+              <Form.Control
+                type="text"
+                name="telephone"
+                value={formData.telephone}
+                onChange={handleChange}
+                isInvalid={!!error?.telephone}
+                placeholder="+216 XX XXX XXX"
+              />
+              {renderErrors('telephone')}
+            </InputGroup>
+          </Form.Group>
+
+          {/* On ne met plus le bouton ici */}
+        </Form>
+      </Modal.Body>
+
+      <Modal.Footer className="d-flex justify-content-center">
+        <Button
+          variant="secondary"
+          onClick={onHide}
+          style={{ padding: '10px 20px', fontWeight: '600' }}
+        >
+          Annuler
+        </Button>
+        <Button
+          variant="primary"
+          onClick={handleSubmit}
+          style={{ padding: '10px 20px', fontWeight: '600' }}
+        >
+          Ajouter
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 };
 

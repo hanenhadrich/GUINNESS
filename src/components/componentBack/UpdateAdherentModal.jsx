@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { clearError, clearSuccess } from '../../store/adherentSlice'; // ajuste le chemin
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  updateAdherent,
+  clearError,
+  clearSuccess,
+  clearSelectedAdherent,
+} from '../../store/adherentSlice';
 
-const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate }) => {
+export default function UpdateAdherentModal({ show, onHide, adherent }) {
   const dispatch = useDispatch();
+  const { loading, error, success } = useSelector((state) => state.adherents);
 
-  // State local du formulaire
   const [formData, setFormData] = useState({
     _id: '',
     nom: '',
@@ -15,10 +20,7 @@ const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate }) => {
     actif: true,
   });
 
-  // Récupération du state Redux pour erreurs, succès et loading
-  const { error, success, loading } = useSelector((state) => state.adherents);
-
-  // Lorsqu'on ouvre le modal avec un adherent à modifier, on remplit le form
+  // Remplir le formulaire quand l'adhérent change
   useEffect(() => {
     if (adherent) {
       setFormData({
@@ -32,7 +34,7 @@ const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate }) => {
     }
   }, [adherent]);
 
-  // Nettoyer erreurs/success à la fermeture du modal
+  // Nettoyer les messages quand on ferme la modale
   useEffect(() => {
     if (!show) {
       dispatch(clearError());
@@ -40,147 +42,113 @@ const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate }) => {
     }
   }, [show, dispatch]);
 
-  // Gestion changement champs
+  // Fermer la modale si succès
+  useEffect(() => {
+    if (success) {
+      dispatch(clearSelectedAdherent());
+      onHide();
+    }
+  }, [success, dispatch, onHide]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // Pour 'actif', convertir string 'true'/'false' en bool
-    if (name === 'actif') {
-      setFormData((prev) => ({
-        ...prev,
-        actif: value === 'true',
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === 'actif' ? value === 'true' : value,
+    }));
   };
 
-  // Soumission formulaire
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (onUpdate) {
-      onUpdate(formData);
-    }
+    dispatch(updateAdherent(formData));
   };
 
   if (!show) return null;
 
+  const renderErrors = (field) => {
+    if (!error || typeof error !== 'object') return null;
+    const messages = error[field];
+    if (!messages) return null;
+    return (Array.isArray(messages) ? messages : [messages]).map((msg, i) => (
+      <div key={i} className="invalid-feedback d-block">{msg}</div>
+    ));
+  };
+
   return (
-    <div
-      className="modal d-block"
-      tabIndex="-1"
-      aria-modal="true"
-      role="dialog"
-      aria-labelledby="updateAdherentModalLabel"
-    >
+    <div className="modal d-block" role="dialog" aria-modal="true" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title" id="updateAdherentModalLabel">
-              Mettre à jour l'adhérent
-            </h5>
-            <button
-              type="button"
-              className="btn-close"
-              aria-label="Fermer"
-              onClick={onHide}
-            />
+            <h5 className="modal-title">Modifier adhérent</h5>
+            <button type="button" className="btn-close" onClick={onHide} />
           </div>
           <div className="modal-body">
-            {error && (
-              <div className="alert alert-danger">
-                {Array.isArray(error.general)
-                  ? error.general.map((err, i) => <div key={i}>{err}</div>)
-                  : error.general || 'Erreur'}
-              </div>
+            {error?.general && (
+              <div className="alert alert-danger">{Array.isArray(error.general) ? error.general.join(', ') : error.general}</div>
             )}
             {success && <div className="alert alert-success">{success}</div>}
-
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
               <div className="mb-3">
-                <label htmlFor="nom" className="form-label">
-                  Nom
-                </label>
+                <label htmlFor="nom" className="form-label">Nom *</label>
                 <input
                   type="text"
-                  className="form-control"
                   id="nom"
                   name="nom"
+                  className={`form-control ${error?.nom ? 'is-invalid' : ''}`}
                   value={formData.nom}
                   onChange={handleChange}
                   required
                 />
+                {renderErrors('nom')}
               </div>
 
               <div className="mb-3">
-                <label htmlFor="prenom" className="form-label">
-                  Prénom
-                </label>
+                <label htmlFor="prenom" className="form-label">Prénom *</label>
                 <input
                   type="text"
-                  className="form-control"
                   id="prenom"
                   name="prenom"
+                  className={`form-control ${error?.prenom ? 'is-invalid' : ''}`}
                   value={formData.prenom}
                   onChange={handleChange}
                   required
                 />
+                {renderErrors('prenom')}
               </div>
 
               <div className="mb-3">
-                <label htmlFor="email" className="form-label">
-                  Email
-                </label>
+                <label htmlFor="email" className="form-label">Email *</label>
                 <input
                   type="email"
-                  className="form-control"
                   id="email"
                   name="email"
+                  className={`form-control ${error?.email ? 'is-invalid' : ''}`}
                   value={formData.email}
                   onChange={handleChange}
                   required
                 />
+                {renderErrors('email')}
               </div>
 
               <div className="mb-3">
-                <label htmlFor="telephone" className="form-label">
-                  Téléphone
-                </label>
-                <div className="input-group">
-                  <span
-                    className="input-group-text"
-                    style={{ backgroundColor: 'white' }}
-                  >
-                    <img
-                      src="assets/img/tn.png"
-                      alt="Drapeau Tunisie"
-                      style={{ width: '20px', height: '15px', marginRight: '5px' }}
-                    />
-                    +216
-                  </span>
-                  <input
-                    type="tel"
-                    className="form-control"
-                    id="telephone"
-                    name="telephone"
-                    value={formData.telephone}
-                    onChange={handleChange}
-                    placeholder="xx xxx xxx"
-                  />
-                </div>
+                <label htmlFor="telephone" className="form-label">Téléphone</label>
+                <input
+                  type="text"
+                  id="telephone"
+                  name="telephone"
+                  className={`form-control ${error?.telephone ? 'is-invalid' : ''}`}
+                  value={formData.telephone}
+                  onChange={handleChange}
+                />
+                {renderErrors('telephone')}
               </div>
 
               <div className="mb-3">
-                <label htmlFor="actif" className="form-label">
-                  Actif
-                </label>
+                <label htmlFor="actif" className="form-label">Actif</label>
                 <select
                   id="actif"
                   name="actif"
-                  className="form-control"
+                  className="form-select"
                   value={formData.actif ? 'true' : 'false'}
                   onChange={handleChange}
                 >
@@ -189,21 +157,13 @@ const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate }) => {
                 </select>
               </div>
 
-              <div className="text-center">
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={loading}
-                >
-                  {loading ? 'En cours...' : 'Mettre à jour'}
-                </button>
-              </div>
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? 'En cours...' : 'Mettre à jour'}
+              </button>
             </form>
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default UpdateAdherentModal;
+}

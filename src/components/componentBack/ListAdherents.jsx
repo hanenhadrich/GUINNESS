@@ -11,7 +11,15 @@ const ListAdherents = ({ adherents, onUpdate, onDelete, error, loading }) => {
   const currentAdherents = adherents.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const goToPage = (page) => {
+    if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
+  };
+
+  const formatError = (err) => {
+    if (!err) return null;
+    if (typeof err === 'string') return err;
+    if (typeof err === 'object') return Object.values(err).flat().join(', ');
+    return 'Erreur inconnue';
   };
 
   if (loading) {
@@ -19,11 +27,19 @@ const ListAdherents = ({ adherents, onUpdate, onDelete, error, loading }) => {
   }
 
   if (error) {
-    return <div className="alert alert-danger">Erreur lors du chargement des adhérents : {error}</div>;
+    return (
+      <div className="alert alert-danger">
+        Erreur lors du chargement des adhérents : {formatError(error)}
+      </div>
+    );
   }
 
   return (
     <>
+      <div className="text-center mb-2">
+        Page {currentPage} sur {totalPages} — {adherents.length} adhérent{adherents.length > 1 ? 's' : ''} au total
+      </div>
+
       <div className="table-responsive">
         <table className="table table-bordered table-hover align-middle">
           <thead className="table-light text-center">
@@ -46,14 +62,18 @@ const ListAdherents = ({ adherents, onUpdate, onDelete, error, loading }) => {
                   <td>{adherent.email}</td>
                   <td className="d-none d-md-table-cell">{adherent.telephone}</td>
                   <td className="d-flex justify-content-center">
-                    <button 
+                    <button
                       className="btn btn-warning me-2"
-                      onClick={() => onUpdate(adherent)} >
+                      onClick={() => onUpdate(adherent)}
+                      aria-label={`Modifier ${adherent.nom} ${adherent.prenom}`}
+                    >
                       <Edit className="me-1" size={18} />
                     </button>
-                    <button 
+                    <button
                       className="btn btn-danger"
-                      onClick={() => onDelete(adherent._id)} >
+                      onClick={() => onDelete(adherent._id)}
+                      aria-label={`Supprimer ${adherent.nom} ${adherent.prenom}`}
+                    >
                       <Trash2 className="me-1" size={18} />
                     </button>
                   </td>
@@ -68,35 +88,44 @@ const ListAdherents = ({ adherents, onUpdate, onDelete, error, loading }) => {
         </table>
       </div>
 
-    
       {totalPages > 1 && (
-        <nav className="mt-3">
+        <nav className="mt-3" aria-label="Pagination des adhérents">
           <ul className="pagination justify-content-center flex-wrap">
             <li className={`page-item ${currentPage === 1 ? 'disabled' : ''} d-none d-sm-block`}>
-              <button className="page-link" onClick={() => goToPage(1)}>&laquo; Première</button>
+              <button className="page-link" onClick={() => goToPage(1)} aria-label="Première page">
+                &laquo; Première
+              </button>
             </li>
 
             <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-              <button className="page-link" onClick={() => goToPage(currentPage - 1)}>&lt; Précédente</button>
+              <button className="page-link" onClick={() => goToPage(currentPage - 1)} aria-label="Page précédente">
+                &lt; Précédente
+              </button>
             </li>
 
-            {[...Array(totalPages)].slice(
-              Math.max(0, currentPage - 3),
-              Math.min(currentPage + 2, totalPages - 1) + 1
-            ).map((_, i) => (
-              <li key={i} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
-                <button className="page-link" onClick={() => goToPage(i + 1)}>
-                  {i + 1}
-                </button>
-              </li>
-            ))}
+            {[...Array(totalPages)]
+              .slice(
+                Math.max(0, currentPage - 3),
+                Math.min(currentPage + 2, totalPages - 1) + 1
+              )
+              .map((_, i) => (
+                <li key={i} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                  <button className="page-link" onClick={() => goToPage(i + 1)} aria-label={`Page ${i + 1}`}>
+                    {i + 1}
+                  </button>
+                </li>
+              ))}
 
             <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-              <button className="page-link" onClick={() => goToPage(currentPage + 1)}>Suivante &gt;</button>
+              <button className="page-link" onClick={() => goToPage(currentPage + 1)} aria-label="Page suivante">
+                Suivante &gt;
+              </button>
             </li>
 
             <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''} d-none d-sm-block`}>
-              <button className="page-link" onClick={() => goToPage(totalPages)}>Dernière &raquo;</button>
+              <button className="page-link" onClick={() => goToPage(totalPages)} aria-label="Dernière page">
+                Dernière &raquo;
+              </button>
             </li>
           </ul>
         </nav>

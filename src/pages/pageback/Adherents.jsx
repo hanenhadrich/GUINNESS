@@ -85,41 +85,39 @@ const Adherents = () => {
   };
 
   const handleAdd = async (newAdherent) => {
-  try {
-    setAddError(null);
-    await dispatch(createAdherent(newAdherent)).unwrap();
-    setShowAddModal(false);
-  } catch (err) {
-    console.log("Erreur brute reçue dans handleAdd:", err);
+    try {
+      setAddError(null);
+      await dispatch(createAdherent(newAdherent)).unwrap();
+      setShowAddModal(false);
+    } catch (err) {
+      console.log("Erreur brute reçue dans handleAdd:", err);
 
-    // Si tu utilises axios, l'erreur peut être dans err.response.data
-    const responseData = err?.response?.data || err;
+      // Souvent, l'erreur est dans err.response.data avec axios
+      const responseData = err?.response?.data || err;
 
-    console.log("Données d'erreur extraites:", responseData);
-
-    if (Array.isArray(responseData)) {
-      const errorsObj = {};
-      responseData.forEach(msg => {
-        if (msg.toLowerCase().includes('email')) {
-          errorsObj.email = msg;
-        } else if (msg.toLowerCase().includes('téléphone') || msg.toLowerCase().includes('telephone')) {
-          errorsObj.telephone = msg;
-        } else {
-          errorsObj.general = errorsObj.general ? errorsObj.general + " " + msg : msg;
-        }
-      });
-      setAddError(errorsObj);
-    } else if (typeof responseData === 'string') {
-      setAddError({ general: responseData });
-    } else if (typeof responseData === 'object' && responseData !== null) {
-      // Si backend envoie objet avec clefs spécifiques, adapte ici
-      setAddError(responseData);
-    } else {
-      setAddError({ general: "Erreur inconnue lors de l'ajout." });
+      if (Array.isArray(responseData)) {
+        const errorsObj = {};
+        responseData.forEach(msg => {
+          if (msg.toLowerCase().includes('email')) {
+            errorsObj.email = errorsObj.email ? [...errorsObj.email, msg] : [msg];
+          } else if (msg.toLowerCase().includes('téléphone') || msg.toLowerCase().includes('telephone')) {
+            errorsObj.telephone = errorsObj.telephone ? [...errorsObj.telephone, msg] : [msg];
+          } else {
+            errorsObj.general = errorsObj.general ? errorsObj.general + " " + msg : msg;
+          }
+        });
+        setAddError(errorsObj);
+      } else if (typeof responseData === 'string') {
+        // On split si plusieurs messages collés
+        const messages = responseData.split('.').filter(Boolean).map(m => m.trim() + '.');
+        setAddError({ general: messages });
+      } else if (typeof responseData === 'object' && responseData !== null) {
+        setAddError(responseData);
+      } else {
+        setAddError({ general: ["Erreur inconnue lors de l'ajout."] });
+      }
     }
-  }
-};
-
+  };
 
   return (
     <main className="container-fluid px-4" style={{ margin: '10px' }}>
@@ -176,18 +174,18 @@ const Adherents = () => {
             }}
           />
 
-          {showModal && (
-            <DeleteConfirmationModal
-              show={showModal}
-              onHide={() => {
-                setShowModal(false);
-                setAdherentToDelete(null);
-              }}
-              onDelete={handleDelete}
-              adherentName={adherentToDelete?.nom}
-              adherentFirstName={adherentToDelete?.prenom}
-            />
-          )}
+          {showModal && adherentToDelete && (
+          <DeleteConfirmationModal
+            show={showModal}
+            onHide={() => {
+              setShowModal(false);
+              setAdherentToDelete(null);
+            }}
+            onDelete={handleDelete}
+            
+          />
+        )}
+
 
           {showUpdateModal && adherentToUpdate && (
             <UpdateAdherentModal
