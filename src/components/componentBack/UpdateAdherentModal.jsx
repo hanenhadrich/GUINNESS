@@ -1,169 +1,170 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  updateAdherent,
-  clearError,
-  clearSuccess,
-  clearSelectedAdherent,
-} from '../../store/adherentSlice';
+import { Modal, Button, Form, InputGroup } from 'react-bootstrap';
+import { FaUser, FaEnvelope, FaPhone } from 'react-icons/fa';
 
-export default function UpdateAdherentModal({ show, onHide, adherent }) {
-  const dispatch = useDispatch();
-  const { loading, error, success } = useSelector((state) => state.adherents);
-
+const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate, error }) => {
   const [formData, setFormData] = useState({
-    _id: '',
     nom: '',
     prenom: '',
     email: '',
     telephone: '',
-    actif: true,
   });
 
-  // Remplir le formulaire quand l'adhérent change
   useEffect(() => {
-    if (adherent) {
+    if (show && adherent) {
       setFormData({
-        _id: adherent._id,
         nom: adherent.nom || '',
         prenom: adherent.prenom || '',
         email: adherent.email || '',
         telephone: adherent.telephone || '',
-        actif: adherent.actif ?? true,
       });
     }
-  }, [adherent]);
-
-  // Nettoyer les messages quand on ferme la modale
-  useEffect(() => {
     if (!show) {
-      dispatch(clearError());
-      dispatch(clearSuccess());
+      setFormData({
+        nom: '',
+        prenom: '',
+        email: '',
+        telephone: '',
+      });
     }
-  }, [show, dispatch]);
-
-  // Fermer la modale si succès
-  useEffect(() => {
-    if (success) {
-      dispatch(clearSelectedAdherent());
-      onHide();
-    }
-  }, [success, dispatch, onHide]);
+  }, [show, adherent]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      [name]: name === 'actif' ? value === 'true' : value,
+      [e.target.name]: e.target.value,
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(updateAdherent(formData));
+    onUpdate({ ...adherent, ...formData });
   };
 
-  if (!show) return null;
-
   const renderErrors = (field) => {
-    if (!error || typeof error !== 'object') return null;
-    const messages = error[field];
-    if (!messages) return null;
-    return (Array.isArray(messages) ? messages : [messages]).map((msg, i) => (
-      <div key={i} className="invalid-feedback d-block">{msg}</div>
-    ));
+    if (!error || !error[field]) return null;
+    if (Array.isArray(error[field])) {
+      return error[field].map((msg, idx) => (
+        <Form.Control.Feedback key={idx} type="invalid" style={{ display: 'block' }}>
+          {msg}
+        </Form.Control.Feedback>
+      ));
+    }
+    return (
+      <Form.Control.Feedback type="invalid" style={{ display: 'block' }}>
+        {error[field]}
+      </Form.Control.Feedback>
+    );
+  };
+
+  const renderGeneralErrors = () => {
+    if (!error?.general) return null;
+    if (Array.isArray(error.general)) {
+      return error.general.map((msg, idx) => (
+        <div key={idx} className="alert alert-danger py-2 mb-3">
+          {msg}
+        </div>
+      ));
+    }
+    return <div className="alert alert-danger py-2 mb-3">{error.general}</div>;
   };
 
   return (
-    <div className="modal d-block" role="dialog" aria-modal="true" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-      <div className="modal-dialog">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Modifier adhérent</h5>
-            <button type="button" className="btn-close" onClick={onHide} />
-          </div>
-          <div className="modal-body">
-            {error?.general && (
-              <div className="alert alert-danger">{Array.isArray(error.general) ? error.general.join(', ') : error.general}</div>
-            )}
-            {success && <div className="alert alert-success">{success}</div>}
-            <form onSubmit={handleSubmit} noValidate>
-              <div className="mb-3">
-                <label htmlFor="nom" className="form-label">Nom *</label>
-                <input
-                  type="text"
-                  id="nom"
-                  name="nom"
-                  className={`form-control ${error?.nom ? 'is-invalid' : ''}`}
-                  value={formData.nom}
-                  onChange={handleChange}
-                  required
-                />
-                {renderErrors('nom')}
-              </div>
+    <Modal show={show} onHide={onHide} centered size="md" backdrop="static" keyboard={false}>
+      <Modal.Header>
+        <Modal.Title>Modifier l'adhérent</Modal.Title>
+      </Modal.Header>
 
-              <div className="mb-3">
-                <label htmlFor="prenom" className="form-label">Prénom *</label>
-                <input
-                  type="text"
-                  id="prenom"
-                  name="prenom"
-                  className={`form-control ${error?.prenom ? 'is-invalid' : ''}`}
-                  value={formData.prenom}
-                  onChange={handleChange}
-                  required
-                />
-                {renderErrors('prenom')}
-              </div>
+      <Modal.Body style={{ backgroundColor: '#f9f9f9' }}>
+        {renderGeneralErrors()}
+        <Form noValidate onSubmit={handleSubmit}>
 
-              <div className="mb-3">
-                <label htmlFor="email" className="form-label">Email *</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  className={`form-control ${error?.email ? 'is-invalid' : ''}`}
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-                {renderErrors('email')}
-              </div>
+          <Form.Group className="mb-4" controlId="nom">
+            <Form.Label>Nom*</Form.Label>
+            <InputGroup>
+              <InputGroup.Text><FaUser /></InputGroup.Text>
+              <Form.Control
+                type="text"
+                name="nom"
+                value={formData.nom}
+                onChange={handleChange}
+                isInvalid={!!error?.nom}
+                placeholder="Entrez le nom"
+              />
+              {renderErrors('nom')}
+            </InputGroup>
+          </Form.Group>
 
-              <div className="mb-3">
-                <label htmlFor="telephone" className="form-label">Téléphone</label>
-                <input
-                  type="text"
-                  id="telephone"
-                  name="telephone"
-                  className={`form-control ${error?.telephone ? 'is-invalid' : ''}`}
-                  value={formData.telephone}
-                  onChange={handleChange}
-                />
-                {renderErrors('telephone')}
-              </div>
+          <Form.Group className="mb-4" controlId="prenom">
+            <Form.Label>Prénom*</Form.Label>
+            <InputGroup>
+              <InputGroup.Text><FaUser /></InputGroup.Text>
+              <Form.Control
+                type="text"
+                name="prenom"
+                value={formData.prenom}
+                onChange={handleChange}
+                isInvalid={!!error?.prenom}
+                placeholder="Entrez le prénom"
+              />
+              {renderErrors('prenom')}
+            </InputGroup>
+          </Form.Group>
 
-              <div className="mb-3">
-                <label htmlFor="actif" className="form-label">Actif</label>
-                <select
-                  id="actif"
-                  name="actif"
-                  className="form-select"
-                  value={formData.actif ? 'true' : 'false'}
-                  onChange={handleChange}
-                >
-                  <option value="true">Oui</option>
-                  <option value="false">Non</option>
-                </select>
-              </div>
+          <Form.Group className="mb-4" controlId="email">
+            <Form.Label>Email*</Form.Label>
+            <InputGroup>
+              <InputGroup.Text><FaEnvelope /></InputGroup.Text>
+              <Form.Control
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                isInvalid={!!error?.email}
+                placeholder="exemple@domaine.com"
+              />
+              {renderErrors('email')}
+            </InputGroup>
+          </Form.Group>
 
-              <button type="submit" className="btn btn-primary" disabled={loading}>
-                {loading ? 'En cours...' : 'Mettre à jour'}
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+          <Form.Group className="mb-4" controlId="telephone">
+            <Form.Label>Téléphone</Form.Label>
+            <InputGroup>
+              <InputGroup.Text><FaPhone /></InputGroup.Text>
+              <Form.Control
+                type="text"
+                name="telephone"
+                value={formData.telephone}
+                onChange={handleChange}
+                isInvalid={!!error?.telephone}
+                placeholder="+216 XX XXX XXX"
+              />
+              {renderErrors('telephone')}
+            </InputGroup>
+          </Form.Group>
+
+          {/* Le bouton est en footer */}
+        </Form>
+      </Modal.Body>
+
+      <Modal.Footer className="d-flex justify-content-center">
+        <Button
+          variant="secondary"
+          onClick={onHide}
+          style={{ padding: '10px 20px', fontWeight: '600' }}
+        >
+          Annuler
+        </Button>
+        <Button
+          variant="primary"
+          onClick={handleSubmit}
+          style={{ padding: '10px 20px', fontWeight: '600' }}
+        >
+          Modifier
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
-}
+};
+
+export default UpdateAdherentModal;

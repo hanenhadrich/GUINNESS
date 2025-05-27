@@ -12,12 +12,7 @@ const DeleteConfirmationModal = ({ show, onHide, onDelete }) => {
         <h5 className="text-center fw-bold" style={{ fontSize: '30px' }}>
           Êtes-vous sûr ?
         </h5>
-        <div className="text-center mt-2">
-          <p className="fw-normal" style={{ fontSize: '18px' }}>
-            <strong>Vous allez supprimer l'adhérent !!! </strong>
-          </p>
-         
-        </div>
+        
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-center">
         <Button variant="secondary" onClick={onHide}>

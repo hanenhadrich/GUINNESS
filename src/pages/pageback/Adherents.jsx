@@ -30,18 +30,24 @@ const Adherents = () => {
   const [searchField, setSearchField] = useState('nom');
   const [searchValue, setSearchValue] = useState('');
 
+  // Pour gérer les erreurs côté ajout et mise à jour séparément
   const [addError, setAddError] = useState(null);
+  const [updateError, setUpdateError] = useState(null);
 
   useEffect(() => {
     dispatch(fetchAdherents());
   }, [dispatch]);
 
   useEffect(() => {
-    if (error && !addError) {
+    // Affiche les erreurs générales du slice (hors modales ajout/update)
+    if (error && !addError && !updateError) {
       if (Array.isArray(error)) {
         error.forEach((msg) => toast.error(msg));
       } else if (typeof error === 'object' && error.message) {
         toast.error(error.message);
+      } else if (typeof error === 'object') {
+        // Si erreur objet, afficher chaque message
+        Object.values(error).flat().forEach((msg) => toast.error(msg));
       } else {
         toast.error(error);
       }
@@ -52,7 +58,7 @@ const Adherents = () => {
       toast.success(success);
       dispatch(clearSuccess());
     }
-  }, [error, success, dispatch, addError]);
+  }, [error, success, dispatch, addError, updateError]);
 
   const filteredAdherents = useMemo(() => {
     if (!searchValue) return list;
@@ -76,11 +82,33 @@ const Adherents = () => {
 
   const handleUpdate = async (updatedAdherent) => {
     try {
+      setUpdateError(null);
       await dispatch(updateAdherent(updatedAdherent)).unwrap();
       setShowUpdateModal(false);
       setAdherentToUpdate(null);
-    } catch {
-      toast.error('Erreur lors de la mise à jour');
+    } catch (err) {
+      // On récupère l'erreur retournée par thunk rejected
+      const responseData = err?.response?.data || err;
+      if (Array.isArray(responseData)) {
+        // Tableau de messages d'erreur
+        const errorsObj = {};
+        responseData.forEach(msg => {
+          if (msg.toLowerCase().includes('email')) {
+            errorsObj.email = errorsObj.email ? [...errorsObj.email, msg] : [msg];
+          } else if (msg.toLowerCase().includes('téléphone') || msg.toLowerCase().includes('telephone')) {
+            errorsObj.telephone = errorsObj.telephone ? [...errorsObj.telephone, msg] : [msg];
+          } else {
+            errorsObj.general = errorsObj.general ? errorsObj.general + " " + msg : msg;
+          }
+        });
+        setUpdateError(errorsObj);
+      } else if (typeof responseData === 'object' && responseData !== null) {
+        setUpdateError(responseData);
+      } else if (typeof responseData === 'string') {
+        setUpdateError({ general: [responseData] });
+      } else {
+        setUpdateError({ general: ["Erreur inconnue lors de la mise à jour."] });
+      }
     }
   };
 
@@ -90,9 +118,6 @@ const Adherents = () => {
       await dispatch(createAdherent(newAdherent)).unwrap();
       setShowAddModal(false);
     } catch (err) {
-      console.log("Erreur brute reçue dans handleAdd:", err);
-
-      // Souvent, l'erreur est dans err.response.data avec axios
       const responseData = err?.response?.data || err;
 
       if (Array.isArray(responseData)) {
@@ -108,7 +133,6 @@ const Adherents = () => {
         });
         setAddError(errorsObj);
       } else if (typeof responseData === 'string') {
-        // On split si plusieurs messages collés
         const messages = responseData.split('.').filter(Boolean).map(m => m.trim() + '.');
         setAddError({ general: messages });
       } else if (typeof responseData === 'object' && responseData !== null) {
@@ -170,22 +194,21 @@ const Adherents = () => {
             }}
             onUpdate={(adh) => {
               setAdherentToUpdate(adh);
+              setUpdateError(null);
               setShowUpdateModal(true);
             }}
           />
 
           {showModal && adherentToDelete && (
-          <DeleteConfirmationModal
-            show={showModal}
-            onHide={() => {
-              setShowModal(false);
-              setAdherentToDelete(null);
-            }}
-            onDelete={handleDelete}
-            
-          />
-        )}
-
+            <DeleteConfirmationModal
+              show={showModal}
+              onHide={() => {
+                setShowModal(false);
+                setAdherentToDelete(null);
+              }}
+              onDelete={handleDelete}
+            />
+          )}
 
           {showUpdateModal && adherentToUpdate && (
             <UpdateAdherentModal
@@ -193,9 +216,11 @@ const Adherents = () => {
               onHide={() => {
                 setShowUpdateModal(false);
                 setAdherentToUpdate(null);
+                setUpdateError(null);
               }}
               adherent={adherentToUpdate}
               onUpdate={handleUpdate}
+              error={updateError}
             />
           )}
 
