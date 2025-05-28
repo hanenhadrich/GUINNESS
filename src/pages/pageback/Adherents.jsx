@@ -30,7 +30,7 @@ const Adherents = () => {
   const [searchField, setSearchField] = useState('nom');
   const [searchValue, setSearchValue] = useState('');
 
-  // Pour gérer les erreurs côté ajout et mise à jour séparément
+
   const [addError, setAddError] = useState(null);
   const [updateError, setUpdateError] = useState(null);
 
@@ -39,14 +39,14 @@ const Adherents = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    // Affiche les erreurs générales du slice (hors modales ajout/update)
+    
     if (error && !addError && !updateError) {
       if (Array.isArray(error)) {
         error.forEach((msg) => toast.error(msg));
       } else if (typeof error === 'object' && error.message) {
         toast.error(error.message);
       } else if (typeof error === 'object') {
-        // Si erreur objet, afficher chaque message
+        
         Object.values(error).flat().forEach((msg) => toast.error(msg));
       } else {
         toast.error(error);
@@ -87,10 +87,10 @@ const Adherents = () => {
       setShowUpdateModal(false);
       setAdherentToUpdate(null);
     } catch (err) {
-      // On récupère l'erreur retournée par thunk rejected
+      
       const responseData = err?.response?.data || err;
       if (Array.isArray(responseData)) {
-        // Tableau de messages d'erreur
+       
         const errorsObj = {};
         responseData.forEach(msg => {
           if (msg.toLowerCase().includes('email')) {

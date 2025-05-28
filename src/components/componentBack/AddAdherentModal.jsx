@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, InputGroup } from 'react-bootstrap';
-import { FaUser, FaEnvelope, FaPhone } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaPhone, FaUserPlus } from 'react-icons/fa';
 
 const AddAdherentModal = ({ show, onHide, onAdd, error }) => {
   const [formData, setFormData] = useState({
@@ -63,14 +63,16 @@ const AddAdherentModal = ({ show, onHide, onAdd, error }) => {
 
   return (
     <Modal show={show} onHide={onHide} centered size="md" backdrop="static" keyboard={false}>
-      <Modal.Header>
-        <Modal.Title>Ajouter un adhérent</Modal.Title>
+      <Modal.Header className="justify-content-center border-0">
+        <Modal.Title className="d-flex align-items-center gap-2 fs-4 fw-bold text-primary">
+          <FaUserPlus className="me-2" />
+          Ajouter un adhérent
+        </Modal.Title>
       </Modal.Header>
 
       <Modal.Body style={{ backgroundColor: '#f9f9f9' }}>
         {renderGeneralErrors()}
         <Form noValidate onSubmit={handleSubmit}>
-
           <Form.Group className="mb-4" controlId="nom">
             <Form.Label>Nom*</Form.Label>
             <InputGroup>
@@ -134,8 +136,6 @@ const AddAdherentModal = ({ show, onHide, onAdd, error }) => {
               {renderErrors('telephone')}
             </InputGroup>
           </Form.Group>
-
-          {/* On ne met plus le bouton ici */}
         </Form>
       </Modal.Body>
 

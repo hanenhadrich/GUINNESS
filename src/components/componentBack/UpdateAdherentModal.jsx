@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, InputGroup } from 'react-bootstrap';
-import { FaUser, FaEnvelope, FaPhone } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaPhone, FaEdit } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
-const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate, error }) => {
+const UpdateAdherentModal = ({ show, onHide, onUpdate, adherent, error }) => {
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
@@ -11,7 +12,7 @@ const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate, error }) => {
   });
 
   useEffect(() => {
-    if (show && adherent) {
+    if (adherent) {
       setFormData({
         nom: adherent.nom || '',
         prenom: adherent.prenom || '',
@@ -19,15 +20,7 @@ const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate, error }) => {
         telephone: adherent.telephone || '',
       });
     }
-    if (!show) {
-      setFormData({
-        nom: '',
-        prenom: '',
-        email: '',
-        telephone: '',
-      });
-    }
-  }, [show, adherent]);
+  }, [adherent]);
 
   const handleChange = (e) => {
     setFormData(prev => ({
@@ -36,9 +29,31 @@ const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate, error }) => {
     }));
   };
 
+  const isDataChanged = () => {
+    return (
+      formData.nom !== (adherent.nom || '') ||
+      formData.prenom !== (adherent.prenom || '') ||
+      formData.email !== (adherent.email || '') ||
+      formData.telephone !== (adherent.telephone || '')
+    );
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onUpdate({ ...adherent, ...formData });
+    if (!isDataChanged()) {
+      toast.info("Aucune modification détectée, mise à jour annulée.");
+      return;
+    }
+
+    const updatedData = {
+      _id: adherent._id,
+      nom: formData.nom,
+      prenom: formData.prenom,
+      email: formData.email,
+      telephone: formData.telephone,
+    };
+
+    onUpdate(updatedData);
   };
 
   const renderErrors = (field) => {
@@ -71,8 +86,11 @@ const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate, error }) => {
 
   return (
     <Modal show={show} onHide={onHide} centered size="md" backdrop="static" keyboard={false}>
-      <Modal.Header>
-        <Modal.Title>Modifier l'adhérent</Modal.Title>
+      <Modal.Header className="justify-content-center border-0">
+        <Modal.Title className="d-flex align-items-center gap-2 fs-4 fw-bold text-primary">
+          <FaEdit className="me-2" />
+          Modifier un adhérent
+        </Modal.Title>
       </Modal.Header>
 
       <Modal.Body style={{ backgroundColor: '#f9f9f9' }}>
@@ -143,24 +161,15 @@ const UpdateAdherentModal = ({ show, onHide, adherent, onUpdate, error }) => {
             </InputGroup>
           </Form.Group>
 
-          {/* Le bouton est en footer */}
         </Form>
       </Modal.Body>
 
       <Modal.Footer className="d-flex justify-content-center">
-        <Button
-          variant="secondary"
-          onClick={onHide}
-          style={{ padding: '10px 20px', fontWeight: '600' }}
-        >
+        <Button variant="secondary" onClick={onHide} style={{ padding: '10px 20px', fontWeight: '600' }}>
           Annuler
         </Button>
-        <Button
-          variant="primary"
-          onClick={handleSubmit}
-          style={{ padding: '10px 20px', fontWeight: '600' }}
-        >
-          Modifier
+        <Button variant="primary" onClick={handleSubmit} style={{ padding: '10px 20px', fontWeight: '600' }}>
+          Enregistrer
         </Button>
       </Modal.Footer>
     </Modal>

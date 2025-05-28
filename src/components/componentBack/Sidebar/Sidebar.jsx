@@ -6,6 +6,7 @@ import * as AiIcons from "react-icons/ai";
 import SidebarData from "./SidebarData";
 import SubMenu from "./SubMenu";
 import { IconContext } from "react-icons/lib";
+import { IconEffectWrapper } from "./IconEffectWrapper";
 
 const Nav = styled.div`
   background: #15171c;
@@ -60,7 +61,9 @@ const Sidebar = () => {
       <IconContext.Provider value={{ color: "#fff" }}>
         <Nav>
           <NavIcon to="#">
-            <FaIcons.FaBars onClick={showSidebar} />
+            <IconEffectWrapper>
+              <FaIcons.FaBars onClick={showSidebar} />
+            </IconEffectWrapper>
           </NavIcon>
 
           <Link
@@ -82,31 +85,24 @@ const Sidebar = () => {
           </Link>
         </Nav>
 
-        {/* Ici on ferme la sidebar quand la souris quitte la zone */}
         <SidebarNav $sidebar={sidebar} onMouseLeave={hideSidebar}>
           <SidebarWrap>
             <NavIcon to="#">
-              <AiIcons.AiOutlineClose onClick={hideSidebar} />
+              <IconEffectWrapper>
+                <AiIcons.AiOutlineClose onClick={hideSidebar} />
+              </IconEffectWrapper>
             </NavIcon>
 
             {SidebarData.map((item, index) =>
               item.title !== "Deconnexion" ? (
-                <SubMenu
-                  item={item}
-                  key={index}
-                  toggleSidebar={hideSidebar}
-                />
+                <SubMenu item={item} key={index} toggleSidebar={hideSidebar} />
               ) : null
             )}
 
             <div style={{ marginTop: "auto" }}>
               {SidebarData.map((item, index) =>
                 item.title === "Deconnexion" ? (
-                  <SubMenu
-                    item={item}
-                    key={index}
-                    toggleSidebar={hideSidebar}
-                  />
+                  <SubMenu item={item} key={index} toggleSidebar={hideSidebar} />
                 ) : null
               )}
             </div>

@@ -1,24 +1,34 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import { useDispatch } from "react-redux";
-import { logout } from "../../../store/authSlice";
+import { Link } from "react-router-dom";
+import styled, { keyframes } from "styled-components";
+import * as AiIcons from "react-icons/ai";
+
+const rotateSmall = keyframes`
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+`;
 
 const SidebarLink = styled(Link)`
   display: flex;
   color: #e1e9fc;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: 16px;
   list-style: none;
   height: 60px;
   text-decoration: none;
-  font-size: 16px;
+  font-size: 18px;
 
   &:hover {
     background: #252831;
-    border-left: 4px solid #0a0a6b;
+    border-left: 4px solid #0A0A6B;
     cursor: pointer;
+  }
+
+  &:hover .icon {
+    transform: scale(1.2) translateX(5px);
+    animation: ${rotateSmall} 0.6s ease-in-out;
   }
 `;
 
@@ -26,9 +36,15 @@ const SidebarLabel = styled.span`
   margin-left: 16px;
 `;
 
+const IconWrapper = styled.div`
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.3s ease;
+`;
+
 const DropdownLink = styled(Link)`
-  background: #252831;
-  height: 60px;
+  background: #414757;
+  height: 50px;
   padding-left: 3rem;
   display: flex;
   align-items: center;
@@ -37,87 +53,38 @@ const DropdownLink = styled(Link)`
   font-size: 16px;
 
   &:hover {
-    background: #1f1f2e;
+    background: #414757;
     cursor: pointer;
   }
-`;
 
-const LogoutButton = styled.div`
-  display: flex;
-  color: #e1e9fc;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 20px;
-  list-style: none;
-  height: 60px;
-  font-size: 16px;
-  cursor: pointer;
-
-  &:hover {
-    background: #252831;
-    border-left: 4px solid #0a0a6b;
+  &:hover .icon {
+    transform: scale(1.2) translateX(5px);
+    animation: ${rotateSmall} 0.6s ease-in-out;
   }
 `;
 
 const SubMenu = ({ item, toggleSidebar }) => {
   const [subnav, setSubnav] = useState(false);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const showSubnav = () => setSubnav(!subnav);
 
-  const handleLogout = () => {
-    toggleSidebar(); // Ferme le menu
-    dispatch(logout());
-    navigate("/home");
-  };
-
-  // Si c'est le bouton de déconnexion
-  if (item.title === "Deconnexion") {
-    return (
-      <LogoutButton onClick={handleLogout}>
-        <div>
-          {item.icon}
-          <SidebarLabel>{item.title}</SidebarLabel>
-        </div>
-      </LogoutButton>
-    );
-  }
-
   return (
     <>
-      <SidebarLink
-        to={item.path}
-        onClick={(e) => {
-          if (item.subNav) {
-            e.preventDefault(); // Ne pas naviguer si sous-menu
-            showSubnav(); // Toggle sous-menu
-          } else {
-            toggleSidebar(); // Ferme le sidebar si lien simple
-          }
-        }}
-      >
+      <SidebarLink to={item.path} onClick={item.subNav && showSubnav}>
+        <IconWrapper className="icon">{item.icon}</IconWrapper>
+        <SidebarLabel>{item.title}</SidebarLabel>
         <div>
-          {item.icon}
-          <SidebarLabel>{item.title}</SidebarLabel>
-        </div>
-        <div>
-          {item.subNav && subnav
-            ? item.iconOpened
-            : item.subNav
-            ? item.iconClosed
-            : null}
+          {item.subNav && subnav ? (
+            <AiIcons.AiOutlineDown />
+          ) : item.subNav ? (
+            <AiIcons.AiOutlineRight />
+          ) : null}
         </div>
       </SidebarLink>
-
       {subnav &&
         item.subNav.map((subItem, index) => (
-          <DropdownLink
-            to={subItem.path}
-            key={index}
-            onClick={toggleSidebar} // Ferme le menu au clic sur un sous-lien
-          >
-            {subItem.icon}
+          <DropdownLink to={subItem.path} key={index} onClick={toggleSidebar}>
+            <IconWrapper className="icon">{subItem.icon}</IconWrapper>
             <SidebarLabel>{subItem.title}</SidebarLabel>
           </DropdownLink>
         ))}
