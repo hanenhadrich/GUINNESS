@@ -1,36 +1,94 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchSubscriptions } from '../../store/subscriptionSlice';
+import { fetchSubscriptions, deleteSubscription, resetError } from '../../store/subscriptionSlice';
 import { fetchAdherents, selectAdherents } from '../../store/adherentSlice';
 import SubscriptionForm from './SubscriptionForm';
-import { Calendar } from 'lucide-react';
-import { Edit, Trash2 } from 'lucide-react';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
+import { Calendar, Edit, Trash2 } from 'lucide-react';
+
 const ITEMS_PER_PAGE = 10;
 
 const SubscriptionList = ({ filterType }) => {
   const dispatch = useDispatch();
-  const { list, loading, error } = useSelector((state) => state.subscriptions);
+  const { list, loading } = useSelector((state) => state.subscriptions);
   const adherents = useSelector(selectAdherents);
+
   const [showForm, setShowForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [editingSubscription, setEditingSubscription] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [subscriptionToDelete, setSubscriptionToDelete] = useState(null);
 
-  const totalPages = Math.ceil(list.length / ITEMS_PER_PAGE);
+  // Filtrer par type
+  const filteredList = list.filter((sub) => sub.type === filterType);
+  const totalPages = Math.ceil(filteredList.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentSubscriptions = list.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
-  const filteredList = currentSubscriptions.filter((subscription) => subscription.type === filterType);
+  const currentSubscriptions = filteredList.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   useEffect(() => {
     dispatch(fetchSubscriptions());
     dispatch(fetchAdherents());
   }, [dispatch]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterType]);
+
   const goToPage = (page) => {
+    if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
   };
 
-  const handleOpenForm = () => setShowForm(true);
-  const handleCloseForm = () => setShowForm(false);
+  const handleOpenForm = () => {
+    dispatch(resetError());
+    setEditingSubscription(null);
+    setShowForm(true);
+  };
+
+  const handleEdit = (subscription) => {
+    dispatch(resetError());
+    setEditingSubscription(subscription);
+    setShowForm(true);
+  };
+
+  const handleDeleteClick = (subscription) => {
+    setSubscriptionToDelete(subscription);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (subscriptionToDelete) {
+      dispatch(deleteSubscription(subscriptionToDelete._id));
+      setShowDeleteModal(false);
+      setSubscriptionToDelete(null);
+    }
+  };
+
+  const handleCloseForm = () => {
+    dispatch(resetError());
+    setShowForm(false);
+    setEditingSubscription(null);
+  };
+
+  // Pagination dynamique — visible max 5 pages autour de la page courante
+  const visiblePages = (() => {
+    const delta = 2;
+    let start = Math.max(1, currentPage - delta);
+    let end = Math.min(totalPages, currentPage + delta);
+
+    if (currentPage <= delta) {
+      end = Math.min(totalPages, 5);
+    }
+    if (currentPage + delta > totalPages) {
+      start = Math.max(1, totalPages - 4);
+    }
+
+    const pages = [];
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  })();
 
   return (
     <>
@@ -48,113 +106,119 @@ const SubscriptionList = ({ filterType }) => {
 
           {loading ? (
             <div className="text-center">Chargement...</div>
-          ) : error ? (
-            <div className="alert alert-danger">{error}</div>
           ) : (
-            <div className="table-responsive">
-              <table className="table table-bordered table-hover align-middle">
-                <thead className="table-light text-center">
-                  <tr>
-                    <th>#</th>
-                    <th>Nom de l'adhérent</th>
-                    <th>Date de début</th>
-                    <th>Durée (j)</th>
-                    <th>Type</th>
-                    <th className="text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="text-center">
-                  {filteredList.length > 0 ? (
-                    filteredList.map((subscription, index) => (
-                      <tr key={subscription._id}>
-                        <td>{startIndex + index + 1}</td>
-                        <td>
-                          {subscription.adherent
-                            ? `${subscription.adherent.nom} ${subscription.adherent.prenom}`
-                            : 'Inconnu'}
-                        </td>
-                        <td>
-                          {subscription.startDate
-                            ? new Date(subscription.startDate).toLocaleDateString()
-                            : 'Non défini'}
-                        </td>
-                        <td>{subscription.duration || 'N/A'}</td>
-                        <td>{subscription.type}</td>
-                        <td className="d-flex justify-content-center">
-                          <button className="btn btn-warning me-2">
-                            <Edit className="me-1" size={18} />
-                          </button>
-                          <button className="btn btn-danger">
-                            <Trash2 className="me-1" size={18} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
+            <>
+              <div className="text-center mb-2">
+                Page {currentPage} sur {totalPages} — {filteredList.length} abonnement{filteredList.length > 1 ? 's' : ''}
+              </div>
+              <div className="table-responsive">
+                <table className="table table-bordered table-hover align-middle">
+                  <thead className="table-light text-center">
                     <tr>
-                      <td colSpan="6" className="text-muted">Aucun abonnement trouvé</td>
+                      <th>#</th>
+                      <th>Nom de l'adhérent</th>
+                      <th>Date de début</th>
+                      <th>Durée (j)</th>
+                      <th>Type</th>
+                      <th className="text-center">Actions</th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
+                  </thead>
+                  <tbody className="text-center">
+                    {currentSubscriptions.length > 0 ? (
+                      currentSubscriptions.map((subscription, idx) => (
+                        <tr key={subscription._id}>
+                          <td>{startIndex + idx + 1}</td>
+                          <td>
+                            {subscription.adherent && (subscription.adherent.nom || subscription.adherent.prenom)
+                              ? `${subscription.adherent.nom || ''} ${subscription.adherent.prenom || ''}`.trim()
+                              : 'Inconnu'}
+                          </td>
+                          <td>{subscription.startDate ? new Date(subscription.startDate).toLocaleDateString() : 'Non défini'}</td>
+                          <td>{subscription.duration || 'N/A'}</td>
+                          <td>{subscription.type}</td>
+                          <td className="d-flex justify-content-center">
+                            <button
+                              className="btn btn-warning me-2"
+                              onClick={() => handleEdit(subscription)}
+                              aria-label={`Modifier abonnement ${subscription._id}`}
+                            >
+                              <Edit className="me-1" size={18} />
+                            </button>
+                            <button
+                              className="btn btn-danger"
+                              onClick={() => handleDeleteClick(subscription)}
+                              aria-label={`Supprimer abonnement ${subscription._id}`}
+                            >
+                              <Trash2 className="me-1" size={18} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={6}>Aucun abonnement trouvé.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
 
-         
-          {totalPages > 1 && (
-            <nav className="mt-3">
-              <ul className="pagination justify-content-center">
-                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                  <button className="page-link" onClick={() => goToPage(1)}>&laquo; Première</button>
-                </li>
-
-                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                  <button className="page-link" onClick={() => goToPage(currentPage - 1)}>&lt; Précédente</button>
-                </li>
-
-                {[...Array(totalPages)].slice(
-                  Math.max(0, currentPage - 3),
-                  Math.min(currentPage + 2, totalPages - 1) + 1
-                ).map((_, i) => (
-                  <li key={i} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
-                    <button className="page-link" onClick={() => goToPage(i + 1)}>
-                      {i + 1}
+              {/* Pagination */}
+              <nav aria-label="Pagination abonnements">
+                <ul className="pagination justify-content-center">
+                  <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                    <button className="page-link" onClick={() => goToPage(1)} aria-label="Première page">
+                      &laquo;
                     </button>
                   </li>
-                ))}
+                  <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                    <button className="page-link" onClick={() => goToPage(currentPage - 1)} aria-label="Page précédente">
+                      &lsaquo;
+                    </button>
+                  </li>
 
-                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                  <button className="page-link" onClick={() => goToPage(currentPage + 1)}>Suivante &gt;</button>
-                </li>
+                  {visiblePages.map((page) => (
+                    <li key={page} className={`page-item ${page === currentPage ? 'active' : ''}`}>
+                      <button className="page-link" onClick={() => goToPage(page)}>
+                        {page}
+                      </button>
+                    </li>
+                  ))}
 
-                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                  <button className="page-link" onClick={() => goToPage(totalPages)}>Dernière &raquo;</button>
-                </li>
-              </ul>
-            </nav>
+                  <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                    <button className="page-link" onClick={() => goToPage(currentPage + 1)} aria-label="Page suivante">
+                      &rsaquo;
+                    </button>
+                  </li>
+                  <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                    <button className="page-link" onClick={() => goToPage(totalPages)} aria-label="Dernière page">
+                      &raquo;
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </>
           )}
         </div>
       </div>
 
-      
+      {/* Formulaire d'ajout / modification */}
       {showForm && (
-        <div className="modal fade show d-block" tabIndex="-1" role="dialog">
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Créer un abonnement</h5>
-                <button type="button" className="btn-close" onClick={handleCloseForm} />
-              </div>
-              <div className="modal-body">
-                <SubscriptionForm
-                  adherents={adherents}
-                  onClose={handleCloseForm}
-                  defaultType={filterType}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        <SubscriptionForm
+          onClose={handleCloseForm}
+          editingSubscription={editingSubscription}
+          filterType={filterType}
+        />
+      )}
+
+      {/* Modal suppression */}
+      {showDeleteModal && (
+        <DeleteConfirmationModal
+          show={showDeleteModal}
+          onHide={() => setShowDeleteModal(false)}
+          onDelete={confirmDelete}
+          message="Voulez-vous vraiment supprimer cet abonnement ?"
+        />
       )}
     </>
   );

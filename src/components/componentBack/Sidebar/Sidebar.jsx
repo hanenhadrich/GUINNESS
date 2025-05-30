@@ -6,7 +6,8 @@ import * as AiIcons from "react-icons/ai";
 import SidebarData from "./SidebarData";
 import SubMenu from "./SubMenu";
 import { IconContext } from "react-icons/lib";
-import { IconEffectWrapper } from "./IconEffectWrapper";
+import IconEffectWrapper from "./IconEffectWrapper";
+
 
 const Nav = styled.div`
   background: #15171c;
@@ -39,7 +40,6 @@ const SidebarNav = styled.nav`
   position: fixed;
   top: 0;
   left: ${({ $sidebar }) => ($sidebar ? "0" : "-100%")};
-  transition: left 350ms ease-in-out;
   z-index: 10;
 `;
 
@@ -57,59 +57,57 @@ const Sidebar = () => {
   const hideSidebar = () => setSidebar(false);
 
   return (
-    <>
-      <IconContext.Provider value={{ color: "#fff" }}>
-        <Nav>
+    <IconContext.Provider value={{ color: "#fff" }}>
+      <Nav>
+        <NavIcon to="#">
+          <IconEffectWrapper>
+            <FaIcons.FaBars onClick={showSidebar} />
+          </IconEffectWrapper>
+        </NavIcon>
+
+        <Link
+          className="navbar-brand d-flex align-items-center"
+          to="/"
+          style={{ fontSize: "14px", color: "white" }}
+        >
+          <img
+            src="/assets/img/GN-Photoroom.png"
+            alt="Guinness Co-working Space"
+            style={{ height: "40px", borderRadius: "50%" }}
+          />
+          <div className="d-flex flex-column ms-2">
+            <span style={{ fontWeight: "bold", textAlign: "center" }}>
+              GUINNESS
+            </span>
+            <span style={{ fontSize: "12px" }}>CO-WORKING SPACE</span>
+          </div>
+        </Link>
+      </Nav>
+
+      <SidebarNav $sidebar={sidebar} onMouseLeave={hideSidebar}>
+        <SidebarWrap>
           <NavIcon to="#">
             <IconEffectWrapper>
-              <FaIcons.FaBars onClick={showSidebar} />
+              <AiIcons.AiOutlineClose onClick={hideSidebar} />
             </IconEffectWrapper>
           </NavIcon>
 
-          <Link
-            className="navbar-brand d-flex align-items-center"
-            to="/"
-            style={{ fontSize: "14px", color: "white" }}
-          >
-            <img
-              src="/assets/img/GN-Photoroom.png"
-              alt="Guinness Co-working Space"
-              style={{ height: "40px", borderRadius: "50%" }}
-            />
-            <div className="d-flex flex-column ms-2">
-              <span style={{ fontWeight: "bold", textAlign: "center" }}>
-                GUINNESS
-              </span>
-              <span style={{ fontSize: "12px" }}>CO-WORKING SPACE</span>
-            </div>
-          </Link>
-        </Nav>
+          {SidebarData.map((item, index) =>
+            item.title !== "Deconnexion" ? (
+              <SubMenu item={item} key={index} toggleSidebar={hideSidebar} />
+            ) : null
+          )}
 
-        <SidebarNav $sidebar={sidebar} onMouseLeave={hideSidebar}>
-          <SidebarWrap>
-            <NavIcon to="#">
-              <IconEffectWrapper>
-                <AiIcons.AiOutlineClose onClick={hideSidebar} />
-              </IconEffectWrapper>
-            </NavIcon>
-
+          <div style={{ marginTop: "auto" }}>
             {SidebarData.map((item, index) =>
-              item.title !== "Deconnexion" ? (
+              item.title === "Deconnexion" ? (
                 <SubMenu item={item} key={index} toggleSidebar={hideSidebar} />
               ) : null
             )}
-
-            <div style={{ marginTop: "auto" }}>
-              {SidebarData.map((item, index) =>
-                item.title === "Deconnexion" ? (
-                  <SubMenu item={item} key={index} toggleSidebar={hideSidebar} />
-                ) : null
-              )}
-            </div>
-          </SidebarWrap>
-        </SidebarNav>
-      </IconContext.Provider>
-    </>
+          </div>
+        </SidebarWrap>
+      </SidebarNav>
+    </IconContext.Provider>
   );
 };
 

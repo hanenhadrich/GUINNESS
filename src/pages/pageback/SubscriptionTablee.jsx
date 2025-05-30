@@ -7,16 +7,16 @@ import SubscriptionForm from '../components/SubscriptionForm';
 const SubscriptionTablee = () => {
   const dispatch = useDispatch();
   const { list, loading, error } = useSelector((state) => state.subscriptions);
-  const adherents = useSelector(selectAdherents); 
+  const adherents = useSelector(selectAdherents);
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchSubscriptions()); 
-    dispatch(fetchAdherents()); 
+    dispatch(fetchSubscriptions());
+    dispatch(fetchAdherents());
   }, [dispatch]);
 
   const handleAddSubscription = () => {
-    setShowForm(true); 
+    setShowForm(true);
   };
 
   const handleCloseForm = () => {
@@ -40,7 +40,7 @@ const SubscriptionTablee = () => {
             <div className="alert alert-danger">{error}</div>
           ) : (
             <table className="table table-bordered">
-              <thead>
+              <thead className="table-light">
                 <tr>
                   <th>Nom de l'adhérent</th>
                   <th>Date de début</th>
@@ -50,23 +50,26 @@ const SubscriptionTablee = () => {
               </thead>
               <tbody>
                 {list.length > 0 ? (
-                  list.map((subscription) => (
-                    <tr key={subscription._id}>
-                      <td>
-                        {subscription.adherent ? (
-                          `${subscription.adherent.nom} ${subscription.adherent.prenom}`
-                        ) : (
-                          'Adhérent inconnu'
-                        )}
-                      </td>
-                      <td>{subscription.startDate ? new Date(subscription.startDate).toLocaleDateString() : 'Date inconnue'}</td>
-                      <td>{subscription.duration || 'Durée inconnue'}</td>
-                      <td>{subscription.type || 'Type inconnu'}</td>
-                    </tr>
-                  ))
+                  list.map((subscription) => {
+                    const { _id, startDate, duration, type, adherent } = subscription;
+                    const adherentName = adherent
+                      ? `${adherent.nom} ${adherent.prenom}`
+                      : 'Adhérent inconnu';
+
+                    return (
+                      <tr key={_id}>
+                        <td>{adherentName}</td>
+                        <td>{startDate ? new Date(startDate).toLocaleDateString() : 'Date inconnue'}</td>
+                        <td>{duration || 'Durée inconnue'}</td>
+                        <td>{type || 'Type inconnu'}</td>
+                      </tr>
+                    );
+                  })
                 ) : (
                   <tr>
-                    <td colSpan="4" className="text-center">Aucun abonnement trouvé</td>
+                    <td colSpan="4" className="text-center">
+                      Aucun abonnement trouvé
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -75,30 +78,37 @@ const SubscriptionTablee = () => {
         </div>
       </div>
 
-      
       {showForm && (
-        <div
-          className={`modal fade show ${showForm ? 'd-block' : ''}`}
-          style={{ display: showForm ? 'block' : 'none' }} 
-          tabIndex="-1"
-          role="dialog"
-          aria-labelledby="subscriptionFormModal"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Créer un abonnement</h5>
-                <button type="button" className="btn-close" onClick={handleCloseForm} aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                <SubscriptionForm adherents={adherents} onClose={handleCloseForm} />
+        <>
+          {/* Backdrop manuel */}
+          <div className="modal-backdrop fade show"></div>
+
+          <div
+            className="modal d-block"
+            tabIndex="-1"
+            role="dialog"
+            aria-labelledby="subscriptionFormModal"
+            aria-hidden="false"
+            aria-modal="true"
+          >
+            <div className="modal-dialog" role="document">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Créer un abonnement</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={handleCloseForm}
+                    aria-label="Fermer"
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <SubscriptionForm adherents={adherents} onClose={handleCloseForm} />
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

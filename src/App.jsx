@@ -16,11 +16,12 @@ import SignUpPage from './pages/pagefront/SignUpPage';
 // Pages privées
 import Home from './pages/pageback/Home';
 import Adherents from './pages/pageback/Adherents';
-
+import SubscriptionSemaine from './pages/pageback/SubscriptionSemaine';
 // Pages erreur
 import Error401 from './components/Error/Error401';
 import Error404 from './components/Error/Error404';
 import Error500 from './components/Error/Error500';
+
 
 const App = () => {
   return (
@@ -43,6 +44,8 @@ const App = () => {
           <Route element={<DashboardLayout />}>
             <Route path="/compte" element={<Home />} />
             <Route path="/adherents" element={<Adherents />} />
+            <Route path="/abonnement/semaine" element={<SubscriptionSemaine/>} />
+            
           </Route>
         </Route>
 

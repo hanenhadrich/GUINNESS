@@ -11,23 +11,21 @@ const rotateSmall = keyframes`
 
 const SidebarLink = styled(Link)`
   display: flex;
-  color: #e1e9fc;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 16px;
-  list-style: none;
   height: 60px;
+  color: #e1e9fc;
   text-decoration: none;
   font-size: 18px;
 
   &:hover {
-    background: #252831;
+    background: #15171c;
     border-left: 4px solid #0A0A6B;
     cursor: pointer;
   }
 
   &:hover .icon {
-    transform: scale(1.2) translateX(5px);
     animation: ${rotateSmall} 0.6s ease-in-out;
   }
 `;
@@ -37,13 +35,17 @@ const SidebarLabel = styled.span`
 `;
 
 const IconWrapper = styled.div`
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  transition: transform 0.3s ease;
+  .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 
 const DropdownLink = styled(Link)`
-  background: #414757;
+  background: #15171c;
   height: 50px;
   padding-left: 3rem;
   display: flex;
@@ -53,12 +55,11 @@ const DropdownLink = styled(Link)`
   font-size: 16px;
 
   &:hover {
-    background: #414757;
+    background: #15171c;
     cursor: pointer;
   }
 
   &:hover .icon {
-    transform: scale(1.2) translateX(5px);
     animation: ${rotateSmall} 0.6s ease-in-out;
   }
 `;
@@ -70,21 +71,19 @@ const SubMenu = ({ item, toggleSidebar }) => {
 
   return (
     <>
-      <SidebarLink to={item.path} onClick={item.subNav && showSubnav}>
-        <IconWrapper className="icon">{item.icon}</IconWrapper>
-        <SidebarLabel>{item.title}</SidebarLabel>
-        <div>
-          {item.subNav && subnav ? (
-            <AiIcons.AiOutlineDown />
-          ) : item.subNav ? (
-            <AiIcons.AiOutlineRight />
-          ) : null}
+      <SidebarLink to={item.path || "#"} onClick={item.subNav ? showSubnav : toggleSidebar}>
+        <IconWrapper>
+          <div className="icon">{item.icon}</div>
+          <SidebarLabel>{item.title}</SidebarLabel>
+        </IconWrapper>
+        <div className="icon">
+          {item.subNav && (subnav ? item.iconOpened : item.iconClosed)}
         </div>
       </SidebarLink>
       {subnav &&
         item.subNav.map((subItem, index) => (
           <DropdownLink to={subItem.path} key={index} onClick={toggleSidebar}>
-            <IconWrapper className="icon">{subItem.icon}</IconWrapper>
+            <div className="icon">{subItem.icon}</div>
             <SidebarLabel>{subItem.title}</SidebarLabel>
           </DropdownLink>
         ))}

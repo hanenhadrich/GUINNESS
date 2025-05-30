@@ -124,6 +124,7 @@ const adherentSlice = createSlice({
         state.list = action.payload.slice().sort((a, b) => a.nom.localeCompare(b.nom));
         state.error = null;
         state.success = null;
+         localStorage.setItem('adherents', JSON.stringify(action.payload));
       })
       .addCase(fetchAdherents.rejected, (state, action) => {
         console.error('Fetch adherents error:', action.payload);
@@ -201,5 +202,6 @@ export const {
   setSelectedAdherent,
   clearSelectedAdherent,
 } = adherentSlice.actions;
-
+export const selectAdherentsLoading = (state) => state.adherents.loading;
+export const selectAdherents = (state) => state.adherents.list;
 export default adherentSlice.reducer;

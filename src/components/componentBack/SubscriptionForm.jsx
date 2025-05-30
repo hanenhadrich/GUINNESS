@@ -1,159 +1,164 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { createSubscription } from '../../store/subscriptionSlice';
-import { FaCalendar, FaUser, FaClock, FaTags } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { Modal, Button, Form, InputGroup, Spinner } from 'react-bootstrap';
+import { FaUser, FaCalendarAlt, FaClock } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  createSubscription,
+  updateSubscription,
+  resetError,
+  selectSubscriptionsLoading,
+} from '../../store/subscriptionSlice';
+import { selectAdherents } from '../../store/adherentSlice';
 
-const SubscriptionForm = ({ adherents, onClose }) => {
+const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
   const dispatch = useDispatch();
-  const [formData, setFormData] = useState({
-    adherent: '',
+  const adherents = useSelector(selectAdherents);
+  const error = useSelector((state) => state.subscriptions.error);
+  const loading = useSelector(selectSubscriptionsLoading);
+
+  const initialFormData = {
+    adherentId: '',
     startDate: '',
-    type: 'mois',
-    customDuration: '', 
-  });
+    duration: 7,
+    type: filterType || '',
+  };
 
-  const getDurationFromType = (type, customDuration) => {
-    switch (type) {
-      case 'semaine':
-        return 7;
-      case 'mois':
-        return 30;
-      case 'an':
-        return 365;
-      case 'autre':
-        return Number(customDuration) || 0;
-      default:
-        return 0;
+  const [formData, setFormData] = useState(initialFormData);
+
+  useEffect(() => {
+    dispatch(resetError());
+
+    if (editingSubscription) {
+      setFormData({
+        adherentId: editingSubscription.adherent?._id || '',
+        startDate: editingSubscription.startDate?.substring(0, 10) || '',
+        duration: editingSubscription.duration || 7,
+        type: editingSubscription.type || filterType || '',
+      });
+    } else {
+      setFormData(initialFormData);
     }
-  };
-
-  const calculateEndDate = (startDate, duration) => {
-    const date = new Date(startDate);
-    date.setDate(date.getDate() + duration);
-    return date.toISOString().split('T')[0];
-  };
+  }, [editingSubscription, filterType, dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (error) dispatch(resetError());
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { adherent, startDate, type, customDuration } = formData;
 
-    if (adherent && startDate && type && (type !== 'autre' || customDuration)) {
-      const duration = getDurationFromType(type, customDuration);
-      const endDate = calculateEndDate(startDate, duration);
+    // Convertir adherentId → adherent pour l’API
+    const payload = {
+      adherent: formData.adherentId,
+      startDate: formData.startDate,
+      duration: Number(formData.duration),
+      type: formData.type,
+    };
 
-      const payload = {
-        adherent,
-        startDate,
-        duration,
-        endDate,
-        type,
-        status: 'active',
-      };
+    const action = editingSubscription
+      ? updateSubscription({ id: editingSubscription._id, data: payload })
+      : createSubscription(payload);
 
-      dispatch(createSubscription(payload));
-      onClose();
-    } else {
-      alert('Veuillez remplir tous les champs.');
-    }
+    dispatch(action).then((res) => {
+      if (!res.error) onClose();
+    });
+  };
+
+  const renderErrors = (field) => {
+    const rawError =
+      error?.[field] || (field === 'adherent' && error?.adherentId);
+    if (!rawError) return null;
+    const messages = Array.isArray(rawError) ? rawError : [rawError];
+    return messages.map((msg, idx) => (
+      <Form.Control.Feedback key={idx} type="invalid" style={{ display: 'block' }}>
+        {msg}
+      </Form.Control.Feedback>
+    ));
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      
-      <div className="mb-3">
-        <label htmlFor="adherent" className="form-label">Sélectionner un adhérent</label>
-        <div className="input-group">
-          <select
-            id="adherent"
-            name="adherent"
-            className="form-control"
-            value={formData.adherent}
-            onChange={handleChange}
-          >
-            <option value="">Sélectionner un adhérent</option>
-            {adherents?.map((adherent) => (
-              <option key={adherent._id} value={adherent._id}>
-                {adherent.nom} {adherent.prenom}
-              </option>
-            ))}
-          </select>
-          <div className="input-group-text bg-white">
-            <FaUser />
-          </div>
-        </div>
-      </div>
+    <Modal show onHide={onClose} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>{editingSubscription ? 'Modifier un abonnement' : 'Ajouter un abonnement'}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        
 
-     
-      <div className="mb-3">
-        <label htmlFor="startDate" className="form-label">Date de début</label>
-        <div className="input-group">
-          <input
-            type="date"
-            id="startDate"
-            name="startDate"
-            className="form-control"
-            value={formData.startDate}
-            onChange={handleChange}
-            required
-          />
-          <div className="input-group-text bg-white">
-            <FaCalendar />
-          </div>
-        </div>
-      </div>
+        <Form onSubmit={handleSubmit} noValidate>
+          <Form.Group className="mb-3" controlId="adherentId">
+            <Form.Label>Adhérent</Form.Label>
+            <InputGroup>
+              <InputGroup.Text><FaUser /></InputGroup.Text>
+              <Form.Select
+                name="adherentId"
+                value={formData.adherentId}
+                onChange={handleChange}
+                isInvalid={!!(error?.adherent || error?.adherentId)}
+                required
+              >
+                <option value="">-- Choisir un adhérent --</option>
+                {adherents.map((adh) => (
+                  <option key={adh._id} value={adh._id}>
+                    {`${adh.nom} ${adh.prenom}`}
+                  </option>
+                ))}
+              </Form.Select>
+              {renderErrors('adherent')}
+            </InputGroup>
+          </Form.Group>
 
-      
-      <div className="mb-3">
-        <label htmlFor="type" className="form-label">Type</label>
-        <div className="input-group">
-          <select
-            id="type"
-            name="type"
-            className="form-control"
-            value={formData.type}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Sélectionner le type</option>
-            <option value="semaine">Semaine</option>
-            <option value="mois">Mois</option>
-            <option value="an">An</option>
-            <option value="autre">Autre</option>
-          </select>
-          <div className="input-group-text bg-white">
-            <FaTags />
-          </div>
-        </div>
-      </div>
+          <Form.Group className="mb-3" controlId="startDate">
+            <Form.Label>Date de début</Form.Label>
+            <InputGroup>
+              <InputGroup.Text><FaCalendarAlt /></InputGroup.Text>
+              <Form.Control
+                type="date"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleChange}
+                isInvalid={!!error?.startDate}
+                required
+              />
+              {renderErrors('startDate')}
+            </InputGroup>
+          </Form.Group>
 
-      
-      {formData.type === 'autre' && (
-        <div className="mb-3">
-          <label htmlFor="customDuration" className="form-label">Durée (en jours)</label>
-          <div className="input-group">
-            <input
-              type="number"
-              id="customDuration"
-              name="customDuration"
-              className="form-control"
-              value={formData.customDuration}
-              onChange={handleChange}
-              required
-            />
-            <div className="input-group-text bg-white">
-              <FaClock />
-            </div>
-          </div>
-        </div>
-      )}
+          <Form.Group className="mb-3" controlId="duration">
+            <Form.Label>Durée</Form.Label>
+            <InputGroup>
+              <InputGroup.Text><FaClock /></InputGroup.Text>
+              <Form.Control
+                type="number"
+                name="duration"
+                min="1"
+                value={formData.duration}
+                onChange={handleChange}
+                isInvalid={!!error?.duration}
+                required
+              />
+              {renderErrors('duration')}
+            </InputGroup>
+          </Form.Group>
 
-      <button type="submit" className="btn btn-primary">Ajouter</button>
-    </form>
+          <Form.Group className="mb-3" controlId="type">
+            <Form.Label>Type</Form.Label>
+            <Form.Control type="text" name="type" value={formData.type} disabled />
+          </Form.Group>
+
+          <div className="d-flex justify-content-end">
+            <Button variant="secondary" onClick={onClose} className="me-2" disabled={loading}>
+              Annuler
+            </Button>
+            <Button variant="primary" type="submit" disabled={loading}>
+              {loading && <Spinner animation="border" size="sm" className="me-2" />}
+              {editingSubscription ? 'Modifier' : 'Ajouter'}
+            </Button>
+          </div>
+        </Form>
+      </Modal.Body>
+    </Modal>
   );
 };
 
