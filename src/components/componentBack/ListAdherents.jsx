@@ -6,9 +6,14 @@ const ITEMS_PER_PAGE = 10;
 const ListAdherents = ({ adherents, onUpdate, onDelete, error, loading }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(adherents.length / ITEMS_PER_PAGE);
+  // Tri alphabétique par nom (A à Z)
+  const sortedAdherents = [...adherents].sort((a, b) =>
+    a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' })
+  );
+
+  const totalPages = Math.ceil(sortedAdherents.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentAdherents = adherents.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const currentAdherents = sortedAdherents.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const goToPage = (page) => {
     if (page < 1 || page > totalPages) return;

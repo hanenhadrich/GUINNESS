@@ -1,16 +1,16 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// ✅ URL de l'API
+// URL de l'API
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:9090/subscriptions';
 
-// ✅ Utilitaire pour extraire proprement les erreurs Axios
+// Extraction propre des erreurs axios
 const extractError = (error, fallback = 'Erreur inconnue') => {
   const err = error?.response?.data;
   return typeof err === 'string' ? { message: err } : err || { message: fallback };
 };
 
-// ✅ Utilitaire pour hydrater les données adhérent depuis le localStorage
+// Hydratation locale des adhérents
 const hydrateAdherentFromLocalStorage = (subscription) => {
   const adherents = JSON.parse(localStorage.getItem('adherents')) || [];
   const found = adherents.find(a => a._id === subscription.adherent);
@@ -20,14 +20,14 @@ const hydrateAdherentFromLocalStorage = (subscription) => {
   return subscription;
 };
 
-// ✅ Thunks
+// Thunks asynchrones
 
-// Fetch
 export const fetchSubscriptions = createAsyncThunk(
   'subscriptions/fetchSubscriptions',
-  async (_, { rejectWithValue }) => {
+  async (filters = {}, { rejectWithValue }) => {
     try {
-      const response = await axios.get(API_URL);
+      const query = new URLSearchParams(filters).toString();
+      const response = await axios.get(`${API_URL}?${query}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(extractError(error, "Erreur lors de la récupération des abonnements"));
@@ -35,7 +35,6 @@ export const fetchSubscriptions = createAsyncThunk(
   }
 );
 
-// Create
 export const createSubscription = createAsyncThunk(
   'subscriptions/createSubscription',
   async (subscription, { rejectWithValue }) => {
@@ -48,7 +47,6 @@ export const createSubscription = createAsyncThunk(
   }
 );
 
-// Update
 export const updateSubscription = createAsyncThunk(
   'subscriptions/updateSubscription',
   async ({ id, data }, { rejectWithValue }) => {
@@ -61,7 +59,6 @@ export const updateSubscription = createAsyncThunk(
   }
 );
 
-// Delete
 export const deleteSubscription = createAsyncThunk(
   'subscriptions/deleteSubscription',
   async (id, { rejectWithValue }) => {
@@ -74,24 +71,27 @@ export const deleteSubscription = createAsyncThunk(
   }
 );
 
-// ✅ Slice
+// Slice Redux
+
 const subscriptionSlice = createSlice({
   name: 'subscriptions',
   initialState: {
     list: [],
     loading: false,
     error: null,
-    successMessage: null
+    successMessage: null,
   },
   reducers: {
     resetError: (state) => {
       state.error = null;
       state.successMessage = null;
     },
+    resetSuccess: (state) => {
+      state.successMessage = null;
+    }
   },
   extraReducers: (builder) => {
     builder
-
       // FETCH
       .addCase(fetchSubscriptions.pending, (state) => {
         state.loading = true;
@@ -99,7 +99,7 @@ const subscriptionSlice = createSlice({
       })
       .addCase(fetchSubscriptions.fulfilled, (state, action) => {
         state.loading = false;
-        state.list = action.payload;
+        state.list = action.payload.map(hydrateAdherentFromLocalStorage);
       })
       .addCase(fetchSubscriptions.rejected, (state, action) => {
         state.loading = false;
@@ -113,8 +113,7 @@ const subscriptionSlice = createSlice({
       })
       .addCase(createSubscription.fulfilled, (state, action) => {
         state.loading = false;
-        let newSub = action.payload;
-        hydrateAdherentFromLocalStorage(newSub);
+        let newSub = hydrateAdherentFromLocalStorage(action.payload);
         state.list.push(newSub);
         state.successMessage = "Abonnement créé avec succès.";
       })
@@ -124,25 +123,19 @@ const subscriptionSlice = createSlice({
       })
 
       // UPDATE
-      
       .addCase(updateSubscription.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(updateSubscription.fulfilled, (state, action) => {
         state.loading = false;
-
-        let updatedSub = action.payload;
-        hydrateAdherentFromLocalStorage(updatedSub); // 👈 Hydrate depuis localStorage
-
+        let updatedSub = hydrateAdherentFromLocalStorage(action.payload);
         const index = state.list.findIndex(sub => sub._id === updatedSub._id);
         if (index !== -1) {
           state.list[index] = updatedSub;
         }
-
         state.successMessage = "Abonnement mis à jour avec succès.";
       })
-
       .addCase(updateSubscription.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
@@ -165,8 +158,10 @@ const subscriptionSlice = createSlice({
   },
 });
 
-// ✅ Selecteurs et export
-export const { resetError } = subscriptionSlice.actions;
+// Exports
+
+export const { resetError, resetSuccess } = subscriptionSlice.actions;
+
 export const selectSubscriptions = (state) => state.subscriptions.list;
 export const selectSubscriptionsLoading = (state) => state.subscriptions.loading;
 export const selectSubscriptionsError = (state) => state.subscriptions.error;

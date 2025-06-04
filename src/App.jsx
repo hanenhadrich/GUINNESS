@@ -21,6 +21,7 @@ import SubscriptionSemaine from './pages/pageback/SubscriptionSemaine';
 import Error401 from './components/Error/Error401';
 import Error404 from './components/Error/Error404';
 import Error500 from './components/Error/Error500';
+import SubscriptionCalendar7Days from './components/componentBack/SubscriptionCalendar7Days';
 
 
 const App = () => {
@@ -45,6 +46,7 @@ const App = () => {
             <Route path="/compte" element={<Home />} />
             <Route path="/adherents" element={<Adherents />} />
             <Route path="/abonnement/semaine" element={<SubscriptionSemaine/>} />
+            <Route path="/abonnement/semainedetail" element={<SubscriptionCalendar7Days/>} />
             
           </Route>
         </Route>

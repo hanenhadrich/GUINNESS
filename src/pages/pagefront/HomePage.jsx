@@ -7,10 +7,8 @@ import AboutTabs from '../../components/componentFront/home/AboutTabs';
 const HomePage = () => {
   return (
     <>
-    
     <SlickSlideshow/>
-    <AboutTabs />
-    
+    <AboutTabs />    
    </>
   );
 };

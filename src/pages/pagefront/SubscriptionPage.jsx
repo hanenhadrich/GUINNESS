@@ -8,12 +8,10 @@ import BackToTopButton from "../../components/componentFront/BackToTopButton";
 import GeneralLayout from "../../layouts/GeneralLayout";
 const SubscriptionPage = () => {
   return (
-    <>
-    
+    <>    
     <HeaderSection />
     <BookingSection />
-    <SubscriptionSection />
-    
+    <SubscriptionSection />    
     </>
   );
 };

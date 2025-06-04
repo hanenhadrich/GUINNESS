@@ -147,7 +147,7 @@ const Adherents = () => {
     <main className="container-fluid px-4" style={{ margin: '10px' }}>
       <div className="card shadow-lg mb-4" style={{ marginLeft: '40px', marginRight: '40px' }}>
         <div className="container mt-3">
-          <h2 className="mb-4">
+          <h2 className="mb-4 mt-2">
             <Users className="mb-1 me-2" />
             Gestion des Adhérents
           </h2>

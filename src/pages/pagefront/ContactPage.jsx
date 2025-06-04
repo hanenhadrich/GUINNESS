@@ -5,11 +5,10 @@ import Header from "../../components/componentFront/contact/Header";
 
 const ContactPage = () => {
   return (
-    <>
+    
     <>
       <Header />
-      <ContactSection />
-    </>
+      <ContactSection />    
     </>
   );
 };

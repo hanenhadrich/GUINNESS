@@ -6,15 +6,17 @@ import {
   createSubscription,
   updateSubscription,
   resetError,
+  selectSubscriptionsError,
   selectSubscriptionsLoading,
 } from '../../store/subscriptionSlice';
 import { selectAdherents } from '../../store/adherentSlice';
 
-const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
+const UpdateSubscriptionModal = ({ onClose, editingSubscription, filterType }) => {
   const dispatch = useDispatch();
+
   const adherents = useSelector(selectAdherents);
-  const error = useSelector((state) => state.subscriptions.error);
   const loading = useSelector(selectSubscriptionsLoading);
+  const error = useSelector(selectSubscriptionsError);
 
   const initialFormData = {
     adherentId: '',
@@ -27,7 +29,6 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
 
   useEffect(() => {
     dispatch(resetError());
-
     if (editingSubscription) {
       setFormData({
         adherentId: editingSubscription.adherent?._id || '',
@@ -66,7 +67,7 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
   };
 
   const renderErrors = (field) => {
-    const rawError = error?.[field];
+    const rawError = error?.[field] || (field === 'adherentId' && error?.adherent);
     if (!rawError) return null;
     const messages = Array.isArray(rawError) ? rawError : [rawError];
     return messages.map((msg, idx) => (
@@ -97,13 +98,13 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
                 name="adherentId"
                 value={formData.adherentId}
                 onChange={handleChange}
-                isInvalid={!!error?.adherentId}
+                isInvalid={!!(error?.adherent || error?.adherentId)}
                 required
               >
                 <option value="">-- Choisir un adhérent --</option>
                 {adherents.map((adh) => (
                   <option key={adh._id} value={adh._id}>
-                    {`${adh.nom} ${adh.prenom}`}
+                    {adh.nom} {adh.prenom}
                   </option>
                 ))}
               </Form.Select>
@@ -134,10 +135,10 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
               <Form.Control
                 type="number"
                 name="duration"
-                min="1"
                 value={formData.duration}
                 onChange={handleChange}
                 isInvalid={!!error?.duration}
+                min="1"
                 required
               />
               {renderErrors('duration')}
@@ -146,16 +147,22 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
 
           <Form.Group className="mb-3" controlId="type">
             <Form.Label>Type</Form.Label>
-            <Form.Control type="text" name="type" value={formData.type} disabled />
+            <Form.Control
+              type="text"
+              name="type"
+              value={formData.type}
+              disabled
+              readOnly
+            />
           </Form.Group>
 
           <div className="d-flex justify-content-end">
             <Button variant="secondary" onClick={onClose} className="me-2" disabled={loading}>
               Annuler
             </Button>
-            <Button variant="primary" type="submit" disabled={loading}>
+            <Button type="submit" variant="primary" disabled={loading}>
               {loading && <Spinner animation="border" size="sm" className="me-2" />}
-              {editingSubscription ? 'Modifier' : 'Ajouter'}
+              {editingSubscription ? 'Mettre à jour' : 'Ajouter'}
             </Button>
           </div>
         </Form>
@@ -164,4 +171,4 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
   );
 };
 
-export default SubscriptionForm;
+export default UpdateSubscriptionModal;
