@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, InputGroup, Spinner, Alert } from 'react-bootstrap';
-import { FaUser, FaCalendarAlt, FaClock } from 'react-icons/fa';
+import { FaUser, FaCalendarAlt, FaClock} from 'react-icons/fa';
+import {CalendarPlus } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   createSubscription,
@@ -19,7 +20,7 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
   const initialFormData = {
     adherentId: '',
     startDate: '',
-    duration: 7,
+    duration: filterType === 'mois' ? 30 : 7,
     type: filterType || '',
   };
 
@@ -32,7 +33,7 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
       setFormData({
         adherentId: editingSubscription.adherent?._id || '',
         startDate: editingSubscription.startDate?.substring(0, 10) || '',
-        duration: editingSubscription.duration || 7,
+        duration: editingSubscription.duration || (filterType === 'mois' ? 30 : 7),
         type: editingSubscription.type || filterType || '',
       });
     } else {
@@ -78,8 +79,11 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
 
   return (
     <Modal show onHide={onClose} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>{editingSubscription ? 'Modifier un abonnement' : 'Ajouter un abonnement'}</Modal.Title>
+      <Modal.Header  className="justify-content-center border-0">
+        <Modal.Title  className="d-flex align-items-center gap-2 fs-4 fw-bold text-primary">
+          <CalendarPlus className="me-2" />
+          {editingSubscription ? 'Modifier un abonnement' : 'Ajouter un abonnement'}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {error?.message && (
@@ -128,7 +132,7 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="duration">
-            <Form.Label>Durée</Form.Label>
+            <Form.Label>Durée (jours)</Form.Label>
             <InputGroup>
               <InputGroup.Text><FaClock /></InputGroup.Text>
               <Form.Control
@@ -148,9 +152,8 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
             <Form.Label>Type</Form.Label>
             <Form.Control type="text" name="type" value={formData.type} disabled />
           </Form.Group>
-
-          <div className="d-flex justify-content-end">
-            <Button variant="secondary" onClick={onClose} className="me-2" disabled={loading}>
+          <div className="d-flex justify-content-center mt-4">
+              <Button variant="secondary" onClick={onClose} className="me-2" disabled={loading}>
               Annuler
             </Button>
             <Button variant="primary" type="submit" disabled={loading}>
@@ -158,8 +161,10 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
               {editingSubscription ? 'Modifier' : 'Ajouter'}
             </Button>
           </div>
+          
         </Form>
       </Modal.Body>
+     
     </Modal>
   );
 };

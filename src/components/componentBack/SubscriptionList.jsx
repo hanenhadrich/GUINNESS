@@ -12,9 +12,9 @@ import {
 } from '../../store/adherentSlice';
 import SubscriptionForm from './SubscriptionForm';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
-import SubscriptionCalendar7Days from './SubscriptionCalendar7Days'; // import du calendrier
+import SubscriptionCalendar7Days from './SubscriptionCalendar7Days'; 
 import { Calendar, Edit, Trash2, CalendarPlus, Table } from 'lucide-react';
-
+import SubscriptionCalendarMonths from './SubscriptionCalendarMonths';
 const ITEMS_PER_PAGE = 10;
 
 const SubscriptionList = ({ filterType }) => {
@@ -35,6 +35,7 @@ const SubscriptionList = ({ filterType }) => {
   // Nouvel état pour afficher le calendrier
   const [showCalendar, setShowCalendar] = useState(false);
 
+  // Chargement des abonnements et adhérents selon filtre et recherche
   useEffect(() => {
     const filters = {};
     if (searchValue) {
@@ -48,27 +49,32 @@ const SubscriptionList = ({ filterType }) => {
     dispatch(fetchAdherents());
   }, [dispatch, searchField, searchValue]);
 
+  // Reset page à 1 lors du changement de filtre ou recherche
   useEffect(() => {
     setCurrentPage(1);
   }, [filterType, searchValue, searchField]);
 
+  // Ouvre le formulaire d’ajout (reset erreurs)
   const handleOpenForm = () => {
     dispatch(resetError());
     setEditingSubscription(null);
     setShowForm(true);
   };
 
+  // Ouvre le formulaire de modification (reset erreurs)
   const handleEdit = (subscription) => {
     dispatch(resetError());
     setEditingSubscription(subscription);
     setShowForm(true);
   };
 
+  // Prépare la suppression (modale)
   const handleDeleteClick = (subscription) => {
     setSubscriptionToDelete(subscription);
     setShowDeleteModal(true);
   };
 
+  // Confirme suppression et appelle action Redux
   const confirmDelete = () => {
     if (subscriptionToDelete) {
       dispatch(deleteSubscription(subscriptionToDelete._id));
@@ -77,12 +83,14 @@ const SubscriptionList = ({ filterType }) => {
     }
   };
 
+  // Ferme le formulaire (reset erreurs)
   const handleCloseForm = () => {
     dispatch(resetError());
     setShowForm(false);
     setEditingSubscription(null);
   };
 
+  // Navigation pagination
   const goToPage = (page) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
@@ -97,6 +105,7 @@ const SubscriptionList = ({ filterType }) => {
       return dateB - dateA;
     });
 
+  // Pagination
   const totalPages = Math.ceil(filteredList.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentSubscriptions = filteredList.slice(
@@ -104,6 +113,7 @@ const SubscriptionList = ({ filterType }) => {
     startIndex + ITEMS_PER_PAGE
   );
 
+  // Pages visibles pour pagination (limité à 5 pages visibles max)
   const visiblePages = (() => {
     const delta = 2;
     let start = Math.max(1, currentPage - delta);
@@ -133,39 +143,43 @@ const SubscriptionList = ({ filterType }) => {
 
   return (
     <>
-    
-      <div className="m-6 " >
-        <div className="d-flex align-items-center justify-content-between mb-4 mt-4" style={{ margin:'40px' }} >
-            <h2 className="mb-4" style={{ marginTop: '20px'}}>
-              <Calendar className="mb-1 me-2" />
-              Abonnements - {filterType}
-            </h2>
-
-            {/* Bouton pour basculer vers le calendrier */}
-              <button
-          className="btn btn-secondary"
-          style={{ marginTop: '20px'}} 
-          onClick={() => setShowCalendar(false)}
+      <div className="m-6">
+        <div
+          className="d-flex align-items-center justify-content-between mb-4 mt-4"
+          style={{ margin: '20px' }}
         >
-          ← Retour à la liste
-        </button>
+          <h2 className="mb-4" style={{ marginTop: '20px' }}>
+            <Calendar className="mb-1 me-2" />
+            Abonnements - {filterType}
+          </h2>
 
+          <button
+            className="btn btn-primary"
+            style={{ marginTop: '10px' }}
+            onClick={() => setShowCalendar(false)}
+          >
+            ← Retour à la liste
+          </button>
         </div>
+      </div>
 
-
-       
-        </div>
+      {filterType === 'mois' ? (
+        <SubscriptionCalendarMonths
+          filterType={filterType}
+          subscriptions={filteredSubscriptions}
+          
+        />
+      ) : (
         <SubscriptionCalendar7Days
           filterType={filterType}
-          subscriptions={list}
+          subscriptions={filteredSubscriptions}
         />
-
+      )}
     </>
   );
 }
 
-
-
+  // Affichage liste classique
   return (
     <>
       <div className="card shadow-lg">
@@ -177,15 +191,14 @@ const SubscriptionList = ({ filterType }) => {
             </h2>
 
             {/* Bouton pour basculer vers le calendrier */}
-             <button
+            <button
               className="btn btn-primary"
               onClick={() => setShowCalendar(true)}
-              aria-label="Voir calendrier 7 jours"
+              aria-label="Voir calendrier"
             >
               <Table />
-              Voir calendrier 7 jours
+              Voir calendrier
             </button>
-
           </div>
 
           <div className="d-flex mb-3">
@@ -256,7 +269,10 @@ const SubscriptionList = ({ filterType }) => {
                         const endDate =
                           startDate && subscription.duration
                             ? new Date(
-                                startDate.getTime() + subscription.duration * 86400000
+                                startDate.getTime() +
+                                  (subscription.type === 'mois'
+                                    ? subscription.duration * 86400000 - 86400000
+                                    : subscription.duration * 86400000)
                               )
                             : null;
 

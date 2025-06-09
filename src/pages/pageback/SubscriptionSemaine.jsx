@@ -7,7 +7,7 @@ const SubscriptionSemaine = () => {
     
       <div className="container mt-2">
         
-          <div className="card-body shadow-lg">
+          <div className="card-body shadow-lg  mx-0">
             <SubscriptionList filterType="semaine" />
           </div>
         
