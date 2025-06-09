@@ -17,11 +17,13 @@ import SignUpPage from './pages/pagefront/SignUpPage';
 import Home from './pages/pageback/Home';
 import Adherents from './pages/pageback/Adherents';
 import SubscriptionSemaine from './pages/pageback/SubscriptionSemaine';
+import SubscriptionMois from './pages/pageback/SubscriptionMois';
 // Pages erreur
 import Error401 from './components/Error/Error401';
 import Error404 from './components/Error/Error404';
 import Error500 from './components/Error/Error500';
 import SubscriptionCalendar7Days from './components/componentBack/SubscriptionCalendar7Days';
+import SubscriptionAutre from './pages/pageback/SubscriptionAutre';
 
 
 const App = () => {
@@ -46,8 +48,8 @@ const App = () => {
             <Route path="/compte" element={<Home />} />
             <Route path="/adherents" element={<Adherents />} />
             <Route path="/abonnement/semaine" element={<SubscriptionSemaine/>} />
-            <Route path="/abonnement/semainedetail" element={<SubscriptionCalendar7Days/>} />
-            
+            <Route path="/abonnement/mois" element={<SubscriptionMois/>} />
+            <Route path="/abonnement/autre" element={<SubscriptionAutre/>} />
           </Route>
         </Route>
 
