@@ -38,8 +38,8 @@ const SidebarData = [
         ],
     },       
     {
-        title: "Support",
-        path: "/support",
+        title: "Profile",
+        path: "/test-modal",
         icon: <IoIcons.IoMdHelpCircle />,
     },
     {

@@ -1,14 +1,16 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import styled, { keyframes } from "styled-components";
-import * as AiIcons from "react-icons/ai";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import styled, { keyframes } from 'styled-components';
+import Swal from 'sweetalert2';
 
+// Animation pour les icônes
 const rotateSmall = keyframes`
   0% { transform: rotate(0deg); }
   50% { transform: rotate(10deg); }
   100% { transform: rotate(0deg); }
 `;
 
+// Styles
 const SidebarLink = styled(Link)`
   display: flex;
   align-items: center;
@@ -27,20 +29,6 @@ const SidebarLink = styled(Link)`
 
   &:hover .icon {
     animation: ${rotateSmall} 0.6s ease-in-out;
-  }
-`;
-
-const SidebarLabel = styled.span`
-  margin-left: 16px;
-`;
-
-const IconWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  .icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 `;
 
@@ -64,14 +52,54 @@ const DropdownLink = styled(Link)`
   }
 `;
 
+const SidebarLabel = styled.span`
+  margin-left: 16px;
+`;
+
+const IconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+
+  .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+`;
+
 const SubMenu = ({ item, toggleSidebar }) => {
   const [subnav, setSubnav] = useState(false);
+  const navigate = useNavigate();
 
   const showSubnav = () => setSubnav(!subnav);
 
+  const handleLogout = async (e) => {
+    e.preventDefault();
+
+    const result = await Swal.fire({
+      title: 'Voulez-vous vous déconnecter ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui, déconnecter',
+      cancelButtonText: 'Annuler'
+    });
+
+    if (result.isConfirmed) {
+      localStorage.clear();
+      navigate('/sign-in');
+    }
+  };
+
+  const isLogout = item.title === 'Deconnexion';
+
   return (
     <>
-      <SidebarLink to={item.path || "#"} onClick={item.subNav ? showSubnav : toggleSidebar}>
+      <SidebarLink
+        to={item.path || "#"}
+        onClick={isLogout ? handleLogout : (item.subNav ? showSubnav : toggleSidebar)}
+      >
         <IconWrapper>
           <div className="icon">{item.icon}</div>
           <SidebarLabel>{item.title}</SidebarLabel>
@@ -80,8 +108,9 @@ const SubMenu = ({ item, toggleSidebar }) => {
           {item.subNav && (subnav ? item.iconOpened : item.iconClosed)}
         </div>
       </SidebarLink>
+
       {subnav &&
-        item.subNav.map((subItem, index) => (
+        item.subNav?.map((subItem, index) => (
           <DropdownLink to={subItem.path} key={index} onClick={toggleSidebar}>
             <div className="icon">{subItem.icon}</div>
             <SidebarLabel>{subItem.title}</SidebarLabel>

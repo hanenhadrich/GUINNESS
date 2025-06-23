@@ -84,7 +84,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         localStorage.setItem("token", action.payload.token);
         localStorage.setItem("userDetails", JSON.stringify(action.payload.user));
-        localStorage.setItem("tokenExpiration", (Date.now() + 60 * 60 * 1000).toString());
+        localStorage.setItem("tokenExpiration", (Date.now() + 60 * 60 * 1000).toString()); // 1h
       })
       .addCase(requestLogin.rejected, (state, action) => {
         state.isLoading = false;

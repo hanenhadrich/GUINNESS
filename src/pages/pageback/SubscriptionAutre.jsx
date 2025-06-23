@@ -1,5 +1,5 @@
 
-import SubscriptionListMonths from '../../components/componentBack/SubscriptionListMonths';
+
 import SubscriptionList from '../../components/componentBack/SubscriptionList';
 const SubscriptionAutre = () => {
   return (

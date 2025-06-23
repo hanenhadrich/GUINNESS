@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
   fetchSubscriptions,
@@ -12,9 +12,10 @@ import {
 } from '../../store/adherentSlice';
 import SubscriptionForm from './SubscriptionForm';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
-import SubscriptionCalendar7Days from './SubscriptionCalendar7Days'; 
+import SubscriptionCalendar7Days from './SubscriptionCalendar7Days';
 import { Calendar, Edit, Trash2, CalendarPlus, Table } from 'lucide-react';
 import SubscriptionCalendarMonths from './SubscriptionCalendarMonths';
+import SubscriptionCalendarAutre from './SubscriptionCalendarAutre';
 const ITEMS_PER_PAGE = 10;
 
 const SubscriptionList = ({ filterType }) => {
@@ -34,6 +35,27 @@ const SubscriptionList = ({ filterType }) => {
   
   // Nouvel état pour afficher le calendrier
   const [showCalendar, setShowCalendar] = useState(false);
+
+  // Fonction pour calculer la durée en jours
+  const calculateDuration = (startDate, duration, type) => {
+    const start = new Date(startDate);
+    if (!duration) return 'Non définie';
+
+    let endDate;
+    if (type === 'mois') {
+      // Si c'est un abonnement mensuel, ajouter la durée en mois
+      endDate = new Date(start);
+      endDate.setDate(start.getDate() + 30); // Durée fixe de 30 jours
+    } else {
+      // Si c'est un abonnement en jours, ajouter la durée en jours
+      endDate = new Date(start);
+      endDate.setDate(start.getDate() + duration);
+    }
+
+    // Calcul de la différence en jours
+    const durationInDays = Math.floor((endDate - new Date(startDate)) / (1000 * 60 * 60 * 24));
+    return `${durationInDays} jours`; // Retourne la durée en jours
+  };
 
   // Chargement des abonnements et adhérents selon filtre et recherche
   useEffect(() => {
@@ -139,45 +161,44 @@ const SubscriptionList = ({ filterType }) => {
 
   // Si showCalendar est true, afficher le calendrier
   if (showCalendar) {
-  const filteredSubscriptions = list.filter((sub) => sub.type === filterType);
+    const filteredSubscriptions = list.filter((sub) => sub.type === filterType);
 
-  return (
-    <>
-      <div className="m-6">
-        <div
-          className="d-flex align-items-center justify-content-between mb-4 mt-4"
-          style={{ margin: '20px' }}
-        >
-          <h2 className="mb-4" style={{ marginTop: '20px' }}>
-            <Calendar className="mb-1 me-2" />
-            Abonnements - {filterType}
-          </h2>
-
-          <button
-            className="btn btn-primary"
-            style={{ marginTop: '10px' }}
-            onClick={() => setShowCalendar(false)}
+    return (
+      <>
+        <div className="m-6">
+          <div
+            className="d-flex align-items-center justify-content-between mb-4 mt-4"
+            style={{ margin: '20px' }}
           >
-            ← Retour à la liste
-          </button>
-        </div>
-      </div>
+            <h2 className="mb-4" style={{ marginTop: '20px' }}>
+              <Calendar className="mb-1 me-2" />
+              Abonnements - {filterType}
+            </h2>
 
-      {filterType === 'mois' ? (
-        <SubscriptionCalendarMonths
-          filterType={filterType}
-          subscriptions={filteredSubscriptions}
-          
-        />
-      ) : (
-        <SubscriptionCalendar7Days
-          filterType={filterType}
-          subscriptions={filteredSubscriptions}
-        />
-      )}
-    </>
-  );
-}
+            <button
+              className="btn btn-primary"
+              style={{ marginTop: '10px' }}
+              onClick={() => setShowCalendar(false)}
+            >
+              ← Retour à la liste
+            </button>
+          </div>
+        </div>
+
+        {filterType === 'semaine' ? (
+          <SubscriptionCalendar7Days
+            filterType={filterType}
+            subscriptions={filteredSubscriptions}
+          />
+        ) : (
+          <SubscriptionCalendarMonths
+            filterType={filterType}
+            subscriptions={filteredSubscriptions}
+          />
+        )}
+      </>
+    );
+  }
 
   // Affichage liste classique
   return (
@@ -243,7 +264,7 @@ const SubscriptionList = ({ filterType }) => {
           ) : (
             <>
               <div className="text-center mb-2">
-                Page {currentPage} sur {totalPages} — {filteredList.length}{' '}
+                Affichage des abonnements — Page {currentPage} sur {totalPages} — {filteredList.length}{' '}
                 abonnement{filteredList.length > 1 ? 's' : ''}
               </div>
 
@@ -255,6 +276,7 @@ const SubscriptionList = ({ filterType }) => {
                       <th>Nom de l'adhérent</th>
                       <th>Date de début</th>
                       <th>Date de fin</th>
+                      <th>Durée</th> {/* Nouvelle colonne pour la durée */}
                       <th>Type</th>
                       <th>Disponibilité</th>
                       <th className="text-center">Actions</th>
@@ -271,11 +293,12 @@ const SubscriptionList = ({ filterType }) => {
                             ? new Date(
                                 startDate.getTime() +
                                   (subscription.type === 'mois'
-                                    ? subscription.duration * 86400000 - 86400000
+                                    ? 30 * 86400000  // Fixe à 30 jours pour type "mois"
                                     : subscription.duration * 86400000)
                               )
                             : null;
 
+                        const duration = calculateDuration(startDate, subscription.duration, subscription.type);
                         const now = new Date();
                         const today = new Date(
                           now.getFullYear(),
@@ -291,15 +314,14 @@ const SubscriptionList = ({ filterType }) => {
                               {subscription.adherent &&
                               (subscription.adherent.nom ||
                                 subscription.adherent.prenom)
-                                ? `${subscription.adherent.nom || ''} ${
-                                    subscription.adherent.prenom || ''
-                                  }`.trim()
+                                ? `${subscription.adherent.nom || ''} ${subscription.adherent.prenom || ''}`
                                 : 'Inconnu'}
                             </td>
                             <td>
                               {startDate ? startDate.toLocaleDateString() : 'Non défini'}
                             </td>
                             <td>{endDate ? endDate.toLocaleDateString() : 'Non défini'}</td>
+                            <td>{duration}</td> {/* Affichage de la durée */}
                             <td>{subscription.type}</td>
 
                             <td>
@@ -337,65 +359,6 @@ const SubscriptionList = ({ filterType }) => {
                   </tbody>
                 </table>
               </div>
-
-              {totalPages > 1 && (
-                <nav aria-label="Pagination abonnements">
-                  <ul className="pagination justify-content-center">
-                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                      <button
-                        className="page-link"
-                        onClick={() => goToPage(1)}
-                        aria-label="Première page"
-                      >
-                        &laquo;
-                      </button>
-                    </li>
-                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                      <button
-                        className="page-link"
-                        onClick={() => goToPage(currentPage - 1)}
-                        aria-label="Page précédente"
-                      >
-                        &lsaquo;
-                      </button>
-                    </li>
-
-                    {visiblePages.map((page) => (
-                      <li
-                        key={page}
-                        className={`page-item ${page === currentPage ? 'active' : ''}`}
-                      >
-                        <button className="page-link" onClick={() => goToPage(page)}>
-                          {page}
-                        </button>
-                      </li>
-                    ))}
-
-                    <li
-                      className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}
-                    >
-                      <button
-                        className="page-link"
-                        onClick={() => goToPage(currentPage + 1)}
-                        aria-label="Page suivante"
-                      >
-                        &rsaquo;
-                      </button>
-                    </li>
-                    <li
-                      className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}
-                    >
-                      <button
-                        className="page-link"
-                        onClick={() => goToPage(totalPages)}
-                        aria-label="Dernière page"
-                      >
-                        &raquo;
-                      </button>
-                    </li>
-                  </ul>
-                </nav>
-              )}
             </>
           )}
         </div>

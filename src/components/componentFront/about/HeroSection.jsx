@@ -1,6 +1,6 @@
 const HeroSection = () => (
 
-  <header className="site-header section-padding-img site-header-image mt-0 mt-lg-5">
+  <header className="site-header section-padding-img site-header-image mt-0 ">
     <div className="container">
       <div className="row">
         <div className="col-lg-10 col-12 header-info">

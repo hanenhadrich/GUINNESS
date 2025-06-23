@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useLocation } from 'react-router-dom';
 import { User } from 'lucide-react';
 
-
 const HomeNavbar = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +19,6 @@ const HomeNavbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
       <div className="container">
-       
         <Link className="navbar-brand d-flex align-items-center" to="/" onClick={closeMenu}>
           <img
             src="/assets/images/GN.png"
@@ -32,7 +30,6 @@ const HomeNavbar = () => {
           </strong>
         </Link>
 
-        
         <button
           className="navbar-toggler"
           type="button"
@@ -42,11 +39,8 @@ const HomeNavbar = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-       
         <div className={`collapse navbar-collapse ${isOpen ? 'show' : ''}`} id="navbarNav">
-          
-          
-          <ul className="navbar-nav mx-auto mb-2 mb-lg-0">
+          <ul className="navbar-nav mx-auto">
             {navItems.map((item) => (
               <li key={item.to} className="nav-item">
                 <Link

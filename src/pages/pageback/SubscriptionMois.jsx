@@ -1,17 +1,9 @@
 
-import SubscriptionListMonths from '../../components/componentBack/SubscriptionListMonths';
+
 import SubscriptionList from '../../components/componentBack/SubscriptionList';
 const SubscriptionMois= () => {
   return (
-    
-      // <div className="container mt-2">
-        
-      //     <div className="card-body shadow-lg  mx-0">
-      //       <SubscriptionListMonths filterType="Mois" />
-      //     </div>
-        
-      // </div>
-      
+         
         <div className="container mt-2">
            
              <div className="card-body shadow-lg  mx-0">

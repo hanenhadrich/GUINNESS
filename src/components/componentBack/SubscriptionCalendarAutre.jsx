@@ -1,12 +1,13 @@
 import React from 'react';
 
-const SubscriptionCalendar7Days = ({ filterType, subscriptions }) => {
+const SubscriptionCalendarAutre = ({ filterType, subscriptions }) => {
+  // Grouper les abonnements par date de début
   const groupedSubscriptions = subscriptions
-    .filter((sub) => sub.type === filterType)
+    .filter(sub => sub.type === filterType)
     .reduce((groups, sub) => {
       const startKeyDate = new Date(sub.startDate);
       startKeyDate.setHours(0, 0, 0, 0);
-      const startKey = startKeyDate.toLocaleDateString('fr-CA');
+      const startKey = startKeyDate.toLocaleDateString('fr-CA'); // YYYY-MM-DD
       if (!groups[startKey]) groups[startKey] = [];
       groups[startKey].push(sub);
       return groups;
@@ -25,6 +26,7 @@ const SubscriptionCalendar7Days = ({ filterType, subscriptions }) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  // Trier du plus récent en haut au plus ancien en bas
   const sortedEntries = Object.entries(groupedSubscriptions).sort(
     ([dateA], [dateB]) => new Date(dateB) - new Date(dateA)
   );
@@ -33,7 +35,8 @@ const SubscriptionCalendar7Days = ({ filterType, subscriptions }) => {
     tableContainer: {
       boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
       borderRadius: '10px',
-      overflow: 'hidden',
+      overflowX: 'auto',
+      marginBottom: '3rem',
     },
     table: {
       width: '100%',
@@ -44,12 +47,12 @@ const SubscriptionCalendar7Days = ({ filterType, subscriptions }) => {
       background: 'linear-gradient(90deg, #deeafb, #d6e4f0)',
       color: '#1e3a8a',
       fontWeight: '600',
+      whiteSpace: 'nowrap',
     },
     th: {
       padding: '10px 8px',
       borderBottom: '1px solid #cbd5e1',
       textAlign: 'center',
-      whiteSpace: 'nowrap',
     },
     td: {
       padding: '8px 6px',
@@ -64,28 +67,28 @@ const SubscriptionCalendar7Days = ({ filterType, subscriptions }) => {
 
   return (
     <div className="container my-4 mb-5">
-      {sortedEntries.map(([startKey, subs], index) => {
+      {sortedEntries.map(([startKey, subs]) => {
         const startDate = new Date(startKey);
         const maxEndDate = new Date(
-          Math.max(...subs.map((s) =>
-            new Date(s.startDate).getTime() + s.duration * 86400000
-          ))
+          Math.max(
+            ...subs.map((s) => new Date(s.startDate).getTime() + (s.duration - 1) * 86400000)
+          )
         );
         const dateRange = getDateRange(startDate, maxEndDate);
 
         return (
-          <div key={startKey} className={`mb-5 ${index === sortedEntries.length - 1 ? 'mb-5' : ''}`}>
+          <div key={startKey} className="mb-5">
             <h5 className="mb-3" style={{ color: '#1e3a8a', fontWeight: 'bold' }}>
               Début des abonnements : {startDate.toLocaleDateString('fr-FR')}
             </h5>
             <div style={styles.tableContainer}>
-              <table style={styles.table} className="text-center align-middle mb-2" >
+              <table style={styles.table} className="text-center align-middle">
                 <thead style={styles.thead}>
                   <tr>
                     <th style={{ ...styles.th, textAlign: 'left' }}>Adhérent</th>
                     {dateRange.map((date, i) => (
                       <th key={i} style={styles.th}>
-                        {date.toLocaleDateString('fr-FR')}
+                        {date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}
                       </th>
                     ))}
                   </tr>
@@ -93,7 +96,7 @@ const SubscriptionCalendar7Days = ({ filterType, subscriptions }) => {
                 <tbody>
                   {subs.map((sub) => {
                     const subStart = new Date(sub.startDate);
-                    const subEnd = new Date(subStart.getTime() + sub.duration * 86400000);
+                    const subEnd = new Date(subStart.getTime() + (sub.duration - 1) * 86400000);
                     const adherentName = sub.adherent
                       ? `${sub.adherent.nom || ''} ${sub.adherent.prenom || ''}`.trim()
                       : 'Inconnu';
@@ -149,4 +152,4 @@ const SubscriptionCalendar7Days = ({ filterType, subscriptions }) => {
   );
 };
 
-export default SubscriptionCalendar7Days;
+export default SubscriptionCalendarAutre;

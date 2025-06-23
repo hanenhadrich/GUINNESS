@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SubscriptionCalendarMultiMonth = ({ filterType, subscriptions }) => {
+const SubscriptionCalendarMonths = ({ filterType, subscriptions }) => {
   // Grouper les abonnements par date de début
   const groupedSubscriptions = subscriptions
     .filter(sub => sub.type === filterType)
@@ -81,8 +81,8 @@ const SubscriptionCalendarMultiMonth = ({ filterType, subscriptions }) => {
             <h5 className="mb-3" style={{ color: '#1e3a8a', fontWeight: 'bold' }}>
               Début des abonnements : {startDate.toLocaleDateString('fr-FR')}
             </h5>
-            <div style={styles.tableContainer}>
-              <table style={styles.table} className="text-center align-middle">
+            <div style={styles.tableContainer} >
+              <table style={styles.table} className="text-center align-middle ">
                 <thead style={styles.thead}>
                   <tr>
                     <th style={{ ...styles.th, textAlign: 'left' }}>Adhérent</th>
@@ -152,4 +152,4 @@ const SubscriptionCalendarMultiMonth = ({ filterType, subscriptions }) => {
   );
 };
 
-export default SubscriptionCalendarMultiMonth;
+export default SubscriptionCalendarMonths;

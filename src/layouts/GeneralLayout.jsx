@@ -11,12 +11,14 @@ import '../css/styles.css';
 
 const GeneralLayout = () => {
   return (
-   <>
-    <HomeNavbar />
-    <Outlet />
-    <Footer />
-    <BackToTopButton />
-  </>
+    <>
+      <HomeNavbar />
+      <main className="p-0 m-0"> {/* Supprime le margin/padding */}
+        <Outlet />
+      </main>
+      <Footer />
+      <BackToTopButton />
+    </>
   );
 };
 

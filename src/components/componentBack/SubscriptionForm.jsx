@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, InputGroup, Spinner, Alert } from 'react-bootstrap';
-import { FaUser, FaCalendarAlt, FaClock} from 'react-icons/fa';
-import {CalendarPlus } from 'lucide-react';
+import { FaUser, FaCalendarAlt, FaClock } from 'react-icons/fa';
+import { CalendarPlus } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   createSubscription,
@@ -10,6 +10,13 @@ import {
   selectSubscriptionsLoading,
 } from '../../store/subscriptionSlice';
 import { selectAdherents } from '../../store/adherentSlice';
+
+// Fonction utilitaire pour parser une date "YYYY-MM-DD" en Date locale à minuit (évite décalage fuseau horaire)
+function parseDateLocal(dateString) {
+  if (!dateString) return null;
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
 
 const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
   const dispatch = useDispatch();
@@ -20,6 +27,7 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
   const initialFormData = {
     adherentId: '',
     startDate: '',
+    endDate: '',
     duration: filterType === 'mois' ? 30 : 7,
     type: filterType || '',
   };
@@ -33,6 +41,7 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
       setFormData({
         adherentId: editingSubscription.adherent?._id || '',
         startDate: editingSubscription.startDate?.substring(0, 10) || '',
+        endDate: editingSubscription.endDate?.substring(0, 10) || '',
         duration: editingSubscription.duration || (filterType === 'mois' ? 30 : 7),
         type: editingSubscription.type || filterType || '',
       });
@@ -47,12 +56,32 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Calculer la date de fin en fonction de la durée et de la date de début, en évitant le décalage timezone
+  const calculateEndDate = () => {
+    const start = parseDateLocal(formData.startDate);
+    if (!start) return '';
+    const end = new Date(start);
+    if (formData.duration) {
+      end.setDate(start.getDate() + Number(formData.duration)); // Ajouter la durée en jours
+    }
+    return end.toISOString().split('T')[0]; // Format YYYY-MM-DD
+  };
+
+  // Mettre à jour la date de fin automatiquement quand startDate ou duration changent
+  useEffect(() => {
+    if (formData.startDate) {
+      const calculatedEndDate = calculateEndDate();
+      setFormData((prev) => ({ ...prev, endDate: calculatedEndDate }));
+    }
+  }, [formData.startDate, formData.duration]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const payload = {
       adherent: formData.adherentId,
       startDate: formData.startDate,
+      endDate: formData.endDate,
       duration: Number(formData.duration),
       type: formData.type,
     };
@@ -79,8 +108,8 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
 
   return (
     <Modal show onHide={onClose} centered>
-      <Modal.Header  className="justify-content-center border-0">
-        <Modal.Title  className="d-flex align-items-center gap-2 fs-4 fw-bold text-primary">
+      <Modal.Header className="justify-content-center border-0">
+        <Modal.Title className="d-flex align-items-center gap-2 fs-4 fw-bold text-primary">
           <CalendarPlus className="me-2" />
           {editingSubscription ? 'Modifier un abonnement' : 'Ajouter un abonnement'}
         </Modal.Title>
@@ -131,6 +160,23 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
             </InputGroup>
           </Form.Group>
 
+          <Form.Group className="mb-3" controlId="endDate">
+            <Form.Label>Date de fin</Form.Label>
+            <InputGroup>
+              <InputGroup.Text><FaCalendarAlt /></InputGroup.Text>
+              <Form.Control
+                type="date"
+                name="endDate"
+                value={formData.endDate}
+                onChange={handleChange}
+                isInvalid={!!error?.endDate}
+                required
+                disabled // La date de fin est calculée automatiquement
+              />
+              {renderErrors('endDate')}
+            </InputGroup>
+          </Form.Group>
+
           <Form.Group className="mb-3" controlId="duration">
             <Form.Label>Durée (jours)</Form.Label>
             <InputGroup>
@@ -152,8 +198,9 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
             <Form.Label>Type</Form.Label>
             <Form.Control type="text" name="type" value={formData.type} disabled />
           </Form.Group>
+
           <div className="d-flex justify-content-center mt-4">
-              <Button variant="secondary" onClick={onClose} className="me-2" disabled={loading}>
+            <Button variant="secondary" onClick={onClose} className="me-2" disabled={loading}>
               Annuler
             </Button>
             <Button variant="primary" type="submit" disabled={loading}>
@@ -161,10 +208,8 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
               {editingSubscription ? 'Modifier' : 'Ajouter'}
             </Button>
           </div>
-          
         </Form>
       </Modal.Body>
-     
     </Modal>
   );
 };

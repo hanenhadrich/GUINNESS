@@ -30,7 +30,7 @@ export default function Home() {
                 </h5>
               </li>
             </ol>
-<ol><SubscriptionCalendarView/></ol>
+            <ol><SubscriptionCalendarView/></ol>
             <div className="row">
               
                 <TodoList />
