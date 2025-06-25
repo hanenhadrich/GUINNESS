@@ -13,17 +13,17 @@ const Footer = () => {
           <div className="col-md-8 text-center border-bottom border-secondary pb-4">
             <ul className="list-unstyled d-flex justify-content-center gap-3">
               <li>
-                <a href="#" className="text-light fs-4">
+                <a href="/contact" className="text-light fs-4">
                   <MessageCircle size={24} />
                 </a>
               </li>
               <li>
-                <a href="#" className="text-light fs-4">
+                <a href="https://www.instagram.com/wiem_bahloul1/?igsh=MzRlODBiNWFlZA%3D%3D#" className="text-light fs-4">
                   <Instagram size={24} />
                 </a>
               </li>
               <li>
-                <a href="#" className="text-light fs-4">
+                <a href="https://www.facebook.com/profile.php?id=100064814617897" className="text-light fs-4">
                   <Facebook size={24} />
                 </a>
               </li>

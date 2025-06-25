@@ -6,7 +6,7 @@ import {
   createReservation,
   updateReservation,
   deleteReservation,
-} from '../../store/reservationSlice';
+} from '../../../store/reservationSlice';
 
 export default function ReservationsList() {
   const dispatch = useDispatch();

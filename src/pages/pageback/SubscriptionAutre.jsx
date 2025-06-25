@@ -1,6 +1,6 @@
 
 
-import SubscriptionList from '../../components/componentBack/SubscriptionList';
+import SubscriptionList from '../../components/componentBack/Subscription/SubscriptionList';
 const SubscriptionAutre = () => {
   return (
         <div className="container mt-2">

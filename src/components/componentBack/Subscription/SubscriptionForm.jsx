@@ -8,8 +8,8 @@ import {
   updateSubscription,
   resetError,
   selectSubscriptionsLoading,
-} from '../../store/subscriptionSlice';
-import { selectAdherents } from '../../store/adherentSlice';
+} from '../../../store/subscriptionSlice';
+import { selectAdherents } from '../../../store/adherentSlice';
 
 // Fonction utilitaire pour parser une date "YYYY-MM-DD" en Date locale à minuit (évite décalage fuseau horaire)
 function parseDateLocal(dateString) {

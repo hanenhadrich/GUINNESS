@@ -1,13 +1,22 @@
 import '../../css/index.css';
 import { CheckCheck, FilePenLine, ChartSpline } from 'lucide-react';
 
-import TodoList from '../../components/componentBack/TodoList';
-import ReservationsList from '../../components/componentBack/ReservationsList';
-import Statistique from '../../components/componentBack/Statistique';
-import ErrorBoundary from '../../components/componentBack/ErrorBoundary';
-import SubscriptionCalendarView from '../../components/componentBack/SubscriptionCalendarView';
-
+import TodoList from '../../components/componentBack/Home/TodoList';
+import ReservationsList from '../../components/componentBack/Home/ReservationsList';
+import Statistique from '../../components/componentBack/Home/Statistique';
+import ErrorBoundary from '../../components/ErrorBoundary';
+import SubscriptionCalendarView from '../../components/componentBack/Home/SubscriptionCalendarView';
+import { fetchSubscriptions, selectSubscriptions } from "../../store/subscriptionSlice";
+import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect } from "react";
 export default function Home() {
+  const dispatch = useDispatch(); // <-- Ajouté ici
+  const subscriptions = useSelector(selectSubscriptions);
+
+  useEffect(() => {
+    dispatch(fetchSubscriptions()); // <-- dispatch défini
+  }, [dispatch]);
+
   return (
     <main className="container-fluid px-1">
       <ErrorBoundary>
@@ -21,27 +30,27 @@ export default function Home() {
                 </h2>
               </li>
             </ol>
-
+            <div className="my-4">
+              <SubscriptionCalendarView subscriptions={subscriptions} />
+            </div>
+            <hr className="my-4" />
             <ol className="breadcrumb mb-4 ms-3">
               <li className="breadcrumb-item active">
                 <h5 className="d-flex align-items-center">
                   <FilePenLine className="me-2" size={18} />
-                  To-Do List & Réservations
+                  To-Do & Réservations
                 </h5>
               </li>
             </ol>
-            <ol><SubscriptionCalendarView/></ol>
-            <div className="row">
-              
+            <div className="card shadow-sm border-0 rounded-3 p-3">
+              <div className="row ms-3 ">
                 <TodoList />
-              
-              
                 <ReservationsList />
-              
+              </div>
             </div>
 
-            <hr className="my-4" />
 
+            <hr className="my-4" />
             <ol className="breadcrumb mb-4 ms-3">
               <li className="breadcrumb-item active">
                 <h5 className="d-flex align-items-center">
@@ -50,7 +59,6 @@ export default function Home() {
                 </h5>
               </li>
             </ol>
-
             <Statistique />
           </div>
         </div>

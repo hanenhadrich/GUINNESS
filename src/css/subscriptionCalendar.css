@@ -1,0 +1,168 @@
+.subscription-calendar {
+  max-width: 900px; /* élargir le calendrier */
+  margin: auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  user-select: none;
+}
+
+.subscription-calendar .calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  color: #222;
+}
+
+.subscription-calendar .calendar-header h4 {
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.subscription-calendar .calendar-header button {
+  border: 1.5px solid #0d6efd;
+  background: transparent;
+  color: #0d6efd;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.subscription-calendar .calendar-header button:hover {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.subscription-calendar table.table-bordered {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.subscription-calendar thead th {
+  width: 16%;
+  padding: 8px 0;
+  background-color: #f0f4ff;
+  border: 1px solid #cbd3e8;
+  font-weight: 700;
+  color: #3b4cca;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.subscription-calendar tbody td {
+  width: 30%;
+  height: 70px;
+  padding: 6px 8px;
+  vertical-align: top;
+  border: 1px solid #cbd3e8;
+  background-color: white;
+  position: relative;
+  cursor: default;
+  transition: background-color 0.15s ease;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.2;
+ cursor : pointer;
+}
+
+.subscription-calendar tbody td.bg-light {
+  background-color: #f9fafc;
+}
+
+.subscription-calendar tbody td.bg-info {
+  background-color: #0d6efd !important;
+  color: white !important;
+  box-shadow: inset 0 0 8px rgba(13, 110, 253, 0.5);
+  border-radius: 4px;
+}
+
+.subscription-calendar tbody td:hover:not(.bg-info):not(.bg-light) {
+  background-color: #f5f9ff;
+}
+
+.subscription-calendar strong {
+  font-size: 1.1rem;
+  display: block;
+  margin-bottom: 3px;
+  color: inherit;
+}
+
+.subscription-calendar .calendar-day-count {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: inherit;
+  white-space: nowrap; /* Empêche le retour à la ligne */
+  display: inline-block; /* Assure que tout reste sur la même ligne */
+ 
+}
+
+
+.subscription-calendar tbody td[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  white-space: pre-line;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(51, 51, 51, 0.9);
+  color: white;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  width: max-content;
+  max-width: 180px;
+  z-index: 10;
+  pointer-events: none;
+  margin-top: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  opacity: 0;
+  animation: fadeInTooltip 0.2s forwards;
+  
+}
+
+@keyframes fadeInTooltip {
+  to { opacity: 1; }
+}
+
+
+/* todo&reservation */
+
+
+
+
+
+.card {
+  background: #ffffff;
+}
+
+.card.shadow-sm {
+  transition: transform 0.2s ease;
+}
+
+.card.shadow-sm:hover {
+  transform: translateY(-5px);
+}
+
+
+
+/* SIGNIN */
+.sign-link {
+  cursor: pointer;
+  font-weight: bold;
+  color: black;
+  text-decoration: none; /* pas souligné au repos */
+  transition: text-decoration 0.2s ease;
+}
+
+.sign-link:hover {
+  text-decoration: underline; /* souligné au survol */
+  color: #0A0A6B;
+}
+

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { requestRegister } from '../../store/authSlice';
 import { Link } from 'react-router-dom';
-
+import '../../css/subscriptionCalendar.css';
 const SignUpForm = () => {
   const dispatch = useDispatch();
 
@@ -105,7 +105,8 @@ const SignUpForm = () => {
                 </button>
 
                 <p className="text-center">
-                  Déjà un compte ? <Link to="/sign-in">Se connecter</Link>
+                  Déjà un compte ? 
+                <Link to="/sign-in" className="sign-link"> Se connecter</Link>
                 </p>
               </form>
             </div>

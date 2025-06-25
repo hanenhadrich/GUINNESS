@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FaPlusCircle, FaTrash } from 'react-icons/fa';
-import { fetchTodos, createTodo, updateTodo, deleteTodo } from '../../store/todoSlice';
+import { fetchTodos, createTodo, updateTodo, deleteTodo } from '../../../store/todoSlice';
 
 export default function TodoList() {
   const dispatch = useDispatch();
@@ -36,7 +36,7 @@ export default function TodoList() {
     <div className="col-xl-6 col-md-12 mb-4">
       <div className="card bg-primary text-white">
         <div className="card-body">
-          <h5 className="text-white">To-Do List</h5>
+          <h5 className="text-white">To-Do </h5>
           <form onSubmit={handleAddTask} className="mt-3">
             <div className="input-group">
               <input

@@ -335,7 +335,7 @@ strong {
   }
 }
 
-/*---------------------------------------
+/* ---------------------------------------
   NAVIGATION               
 -----------------------------------------*/
 .navbar {
@@ -381,12 +381,12 @@ strong {
   margin-left: 1.5rem;
 }
 
-.nav-link {
+/* .nav-link {
   color: var(--p-color);
   font-size: 16px;
   position: relative;
-}
-
+} */
+/* 
 .navbar .nav-link::after {
   position: absolute;
   top: 100%;
@@ -420,23 +420,27 @@ strong {
 .nav-link:focus, 
 .nav-link:hover {
   color: var(--p-color);
-}
+} */
 
-.navbar-toggler {
-  border: 0;
+/* .navbar-toggler {
+  width: 60px;
+  height: 40px;
   padding: 0;
+  border: 2px solid var(--dark-color); 
+  border-radius: 4px;                
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  margin: 0;
-  width: 30px;
-  height: 35px;
-  outline: none;
-}
+  background: transparent;
+} */
 
-.navbar-toggler:focus {
+
+/* .navbar-toggler:focus {
   outline: none;
   box-shadow: none;
 }
-
+/* 
 .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
   background: transparent;
 }
@@ -458,12 +462,11 @@ strong {
 }
 
 .navbar-toggler .navbar-toggler-icon {
-  background: var(--dark-color);
-  transition: background 10ms 300ms ease;
-  display: block;
-  width: 30px;
+  width: 24px;
   height: 2px;
   position: relative;
+  background: var(--dark-color); 
+  transition: background 0.3s ease;
 }
 
 .navbar-toggler .navbar-toggler-icon::before,
@@ -486,8 +489,7 @@ strong {
 
 .navbar-toggler .navbar-toggler-icon:after {
   top: 8px;
-}
-
+}  */
 /*---------------------------------------
   SITE HEADER              
 -----------------------------------------*/

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { requestLogin } from '../../store/authSlice';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-
+import '../../css/subscriptionCalendar.css';
 const SignInForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -79,7 +79,7 @@ const SignInForm = () => {
                     {isLoading ? 'Connexion en cours...' : 'Se connecter'}
                   </button>
                   <p className="text-center">
-                    Pas encore de compte ? <a href="/sign-up">Créez-en un !</a>
+                    Pas encore de compte ? <a href="/sign-up" className="sign-link">Créez-en un !</a>
                   </p>
                 </form>
               </div>

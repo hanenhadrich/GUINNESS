@@ -10,7 +10,7 @@ const rotateSmall = keyframes`
   100% { transform: rotate(0deg); }
 `;
 
-// Styles
+// Styled Components
 const SidebarLink = styled(Link)`
   display: flex;
   align-items: center;
@@ -43,7 +43,7 @@ const DropdownLink = styled(Link)`
   font-size: 16px;
 
   &:hover {
-    background: #15171c;
+    background: #1d1f25;
     cursor: pointer;
   }
 
@@ -65,6 +65,13 @@ const IconWrapper = styled.div`
     align-items: center;
     justify-content: center;
   }
+`;
+
+const DropdownContainer = styled.div`
+  overflow: hidden;
+  transition: max-height 0.8s ease, opacity 0.4s ease;
+  max-height: ${({ $expanded }) => ($expanded ? '500px' : '0')};
+  opacity: ${({ $expanded }) => ($expanded ? '1' : '0')};
 `;
 
 const SubMenu = ({ item, toggleSidebar }) => {
@@ -109,13 +116,16 @@ const SubMenu = ({ item, toggleSidebar }) => {
         </div>
       </SidebarLink>
 
-      {subnav &&
-        item.subNav?.map((subItem, index) => (
-          <DropdownLink to={subItem.path} key={index} onClick={toggleSidebar}>
-            <div className="icon">{subItem.icon}</div>
-            <SidebarLabel>{subItem.title}</SidebarLabel>
-          </DropdownLink>
-        ))}
+      {item.subNav && (
+        <DropdownContainer $expanded={subnav}>
+          {item.subNav.map((subItem, index) => (
+            <DropdownLink to={subItem.path} key={index} onClick={toggleSidebar}>
+              <div className="icon">{subItem.icon}</div>
+              <SidebarLabel>{subItem.title}</SidebarLabel>
+            </DropdownLink>
+          ))}
+        </DropdownContainer>
+      )}
     </>
   );
 };

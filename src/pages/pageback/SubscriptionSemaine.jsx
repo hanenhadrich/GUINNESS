@@ -1,5 +1,5 @@
 
-import SubscriptionList from '../../components/componentBack/SubscriptionList';
+import SubscriptionList from '../../components/componentBack/Subscription/SubscriptionList';
 
 
 const SubscriptionSemaine = () => {

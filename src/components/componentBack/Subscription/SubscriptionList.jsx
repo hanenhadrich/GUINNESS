@@ -5,13 +5,13 @@ import {
   fetchSubscriptions,
   deleteSubscription,
   resetError,
-} from '../../store/subscriptionSlice';
+} from '../../../store/subscriptionSlice';
 import {
   fetchAdherents,
   selectAdherents,
-} from '../../store/adherentSlice';
+} from '../../../store/adherentSlice';
 import SubscriptionForm from './SubscriptionForm';
-import DeleteConfirmationModal from './DeleteConfirmationModal';
+import DeleteConfirmationModal from '../DeleteConfirmationModal';
 import SubscriptionCalendar7Days from './SubscriptionCalendar7Days';
 import { Calendar, Edit, Trash2, CalendarPlus, Table } from 'lucide-react';
 import SubscriptionCalendarMonths from './SubscriptionCalendarMonths';

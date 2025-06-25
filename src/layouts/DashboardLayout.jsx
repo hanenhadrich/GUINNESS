@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from '../components/componentBack/Sidebar/Sidebar';
 import Footer from '../components/componentBack/Footer';
-import BackToTopButton from '../components/componentFront/BackToTopButton';
+import BackToTopButton from '../components/BackToTopButton';
 
 import '../css/slick.css';
 import '../css/guinnessstyle.css';
