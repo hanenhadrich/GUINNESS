@@ -24,6 +24,7 @@ import SubscriptionSemaine from './pages/pageback/SubscriptionSemaine';
 import SubscriptionMois from './pages/pageback/SubscriptionMois';
 import SubscriptionAutre from './pages/pageback/SubscriptionAutre';
 import ReclamationsPage from './pages/pageback/ReclamationsPage';
+import UpdateProfileForm from './pages/pageback/UpdateProfileForm';
 
 // Pages privées utilisateur simple
 import UserDashboard from './pages/UserDashboard';
@@ -59,6 +60,7 @@ const App = () => {
             <Route path="/abonnement/mois" element={<SubscriptionMois />} />
             <Route path="/abonnement/autre" element={<SubscriptionAutre />} />
             <Route path="/reclamations" element={<ReclamationsPage />} />
+            <Route path="/profile" element={<UpdateProfileForm/>} />
           </Route>
         </Route>
 

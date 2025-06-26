@@ -38,6 +38,32 @@ export const requestRegister = createAsyncThunk(
   }
 );
 
+export const requestUpdateProfile = createAsyncThunk(
+  "users/updateProfile",
+  async ({ firstName, lastName, email, telephone, password }, { getState, rejectWithValue }) => {
+    try {
+      const state = getState();
+      const token = state.auth.token;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const res = await axios.put(
+        `${API_URL}/users/update-profile`,
+        { firstName, lastName, email, telephone, password },
+        config
+      );
+
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(extractErrorMessage(error));
+    }
+  }
+);
+
 const saveAuthToLocalStorage = (token, user) => {
   localStorage.setItem("token", token);
   localStorage.setItem("userDetails", JSON.stringify(user));
@@ -107,6 +133,24 @@ const authSlice = createSlice({
       .addCase(requestRegister.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload || "Erreur lors de l'inscription";
+        alertError(state.error);
+      })
+      // Update profile
+      .addCase(requestUpdateProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(requestUpdateProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        // Mise à jour user dans le state
+        state.user = action.payload.user;
+        alertSuccess(action.payload.message || "Profil mis à jour avec succès");
+        // Mettre à jour localStorage aussi
+        localStorage.setItem("userDetails", JSON.stringify(action.payload.user));
+      })
+      .addCase(requestUpdateProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
         alertError(state.error);
       });
   },

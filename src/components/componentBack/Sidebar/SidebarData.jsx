@@ -1,18 +1,19 @@
+import React from "react"; 
 import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
-import * as IoIcons from "react-icons/io";
+import * as MdIcons from "react-icons/md";
 import * as RiIcons from "react-icons/ri";
 
 const SidebarData = [
     {
         title: "Dashboard",
         path: "/compte",
-        icon: <AiIcons.AiFillHome />
+        icon: <RiIcons.RiDashboardFill />,
     },
     {
         title: "Adhérents",
         path: "/adherents",
-        icon: <FaIcons.FaAddressCard />,
+       icon: <FaIcons.FaUsers />,
          
     },
     {
@@ -22,36 +23,25 @@ const SidebarData = [
         iconOpened: <RiIcons.RiArrowUpSFill />,
 
         subNav: [
-            {
-                title: "Semaine",
-                path: "/abonnement/semaine",
-                icon: <FaIcons.FaAngleRight/>,
-            },
-            {
-                title: "Mois",
-                path: "/abonnement/mois",
-                icon: <FaIcons.FaAngleRight />,
-            },{
-                title: "Autre",
-                path: "/abonnement/autre",
-                icon: <FaIcons.FaAngleRight/>,
-            },
-        ],
+            { title: "Semaine", path: "/abonnement/semaine", icon: <FaIcons.FaAngleRight /> },
+            { title: "Mois", path: "/abonnement/mois", icon: <FaIcons.FaAngleRight /> },
+            { title: "Autre", path: "/abonnement/autre", icon: <FaIcons.FaAngleRight /> },
+               ],
     }, 
      {
         title: "Reclamations",
         path: "/reclamations",
-        icon: <IoIcons.IoMdHelpCircle />,
+        icon: <MdIcons.MdReportProblem />,
     },      
     {
         title: "Profile",
-        path: "/test-modal",
-        icon: <FaIcons.FaUserCircle />,
-    },
+        path: "/profile",
+        icon: <AiIcons.AiOutlineUser />,
+      },      
     {
         title: "Deconnexion",
         path: "/logout",
-        icon: <FaIcons.FaTimes />,
+        icon: <RiIcons.RiLogoutBoxRLine />,
     },
     
 ];
