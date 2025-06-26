@@ -339,17 +339,22 @@ strong {
   NAVIGATION               
 -----------------------------------------*/
 .navbar {
-  background: var(--white-color);
   position: fixed;
   top: 0;
   right: 0;
   left: 0;
-  padding: 25px 0;
   z-index: 2;
-  will-change: transform;
-  transition: transform 300ms linear;
+  background: var(--white-color);
+  padding: 1rem 0;
 }
 
+@media (min-width: 992px) {
+  .navbar-expand-lg .navbar-nav .nav-link {
+    margin-right: 1.5rem;
+    margin-left: 1.5rem;
+    display: inline-block;
+  }
+}
 .navbar span, h2 span, h4 span {
 	color: var(--primary-color);
 }
@@ -362,9 +367,6 @@ strong {
   transform: translate(0, 0);
 }
 
-.headroom--unpinned {
-  transform: translate(0, -150%);
-}
 
 .navbar-brand {
   color: var(--dark-color);
@@ -731,7 +733,7 @@ section {
 }
 
 .section-padding {
-  padding-top: 7rem;
+  padding-top: 2rem;
   padding-bottom: 7rem;
 }
 

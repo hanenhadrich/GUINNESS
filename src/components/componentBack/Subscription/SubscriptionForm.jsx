@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, InputGroup, Spinner, Alert } from 'react-bootstrap';
 import { FaUser, FaCalendarAlt, FaClock } from 'react-icons/fa';
 import { CalendarPlus } from 'lucide-react';
+import Swal from 'sweetalert2';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   createSubscription,
@@ -11,7 +12,6 @@ import {
 } from '../../../store/subscriptionSlice';
 import { selectAdherents } from '../../../store/adherentSlice';
 
-// Fonction utilitaire pour parser une date "YYYY-MM-DD" en Date locale à minuit (évite décalage fuseau horaire)
 function parseDateLocal(dateString) {
   if (!dateString) return null;
   const [year, month, day] = dateString.split('-').map(Number);
@@ -31,12 +31,10 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
     duration: filterType === 'mois' ? 30 : 7,
     type: filterType || '',
   };
-
   const [formData, setFormData] = useState(initialFormData);
 
   useEffect(() => {
     dispatch(resetError());
-
     if (editingSubscription) {
       setFormData({
         adherentId: editingSubscription.adherent?._id || '',
@@ -50,50 +48,27 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
     }
   }, [editingSubscription, filterType, dispatch]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (error) dispatch(resetError());
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // Calculer la date de fin en fonction de la durée et de la date de début, en évitant le décalage timezone
-  const calculateEndDate = () => {
-    const start = parseDateLocal(formData.startDate);
-    if (!start) return '';
-    const end = new Date(start);
-    if (formData.duration) {
-      end.setDate(start.getDate() + Number(formData.duration)); // Ajouter la durée en jours
-    }
-    return end.toISOString().split('T')[0]; // Format YYYY-MM-DD
-  };
-
-  // Mettre à jour la date de fin automatiquement quand startDate ou duration changent
   useEffect(() => {
     if (formData.startDate) {
-      const calculatedEndDate = calculateEndDate();
-      setFormData((prev) => ({ ...prev, endDate: calculatedEndDate }));
+      const start = parseDateLocal(formData.startDate);
+      if (start) {
+        const end = new Date(start);
+        end.setDate(start.getDate() + Number(formData.duration));
+        const calculatedEndDate = end.toISOString().split('T')[0];
+        if (calculatedEndDate !== formData.endDate) {
+          setFormData((prev) => ({ ...prev, endDate: calculatedEndDate }));
+        }
+      }
     }
   }, [formData.startDate, formData.duration]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const payload = {
-      adherent: formData.adherentId,
-      startDate: formData.startDate,
-      endDate: formData.endDate,
-      duration: Number(formData.duration),
-      type: formData.type,
-    };
-
-    const action = editingSubscription
-      ? updateSubscription({ id: editingSubscription._id, data: payload })
-      : createSubscription(payload);
-
-    dispatch(action).then((res) => {
-      if (!res.error) onClose();
-    });
-  };
+  useEffect(() => {
+    if (error?.message) {
+      Swal.fire('Erreur', error.message, 'error');
+      const timer = setTimeout(() => dispatch(resetError()), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, dispatch]);
 
   const renderErrors = (field) => {
     const rawError = error?.[field];
@@ -106,15 +81,55 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
     ));
   };
 
+  const handleChange = (e) => {
+    if (error) dispatch(resetError());
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(resetError());
+
+    if (!formData.startDate) {
+      Swal.fire('Erreur', 'La date de début est requise', 'error');
+      return;
+    }
+
+    const payload = {
+      adherent: formData.adherentId,
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      duration: Number(formData.duration),
+      type: formData.type,
+    };
+    const action = editingSubscription
+      ? updateSubscription({ id: editingSubscription._id, data: payload })
+      : createSubscription(payload);
+
+    dispatch(action).then((res) => {
+      if (res.error) {
+        Swal.fire('Erreur', res.payload || 'Erreur lors de la sauvegarde', 'error');
+      } else {
+        Swal.fire(
+          'Succès',
+          `Abonnement ${editingSubscription ? 'modifié' : 'ajouté'} avec succès`,
+          'success'
+        );
+        onClose();
+      }
+    });
+  };
+
   return (
-    <Modal show onHide={onClose} centered>
+    <Modal show onHide={onClose} centered backdrop="static" keyboard={false}>
       <Modal.Header className="justify-content-center border-0">
         <Modal.Title className="d-flex align-items-center gap-2 fs-4 fw-bold text-primary">
           <CalendarPlus className="me-2" />
           {editingSubscription ? 'Modifier un abonnement' : 'Ajouter un abonnement'}
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+
+      <Modal.Body style={{ backgroundColor: '#f9f9f9' }}>
         {error?.message && (
           <Alert variant="danger" className="text-center">
             {error.message}
@@ -135,9 +150,7 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
               >
                 <option value="">-- Choisir un adhérent --</option>
                 {adherents.map((adh) => (
-                  <option key={adh._id} value={adh._id}>
-                    {`${adh.nom} ${adh.prenom}`}
-                  </option>
+                  <option key={adh._id} value={adh._id}>{`${adh.nom} ${adh.prenom}`}</option>
                 ))}
               </Form.Select>
               {renderErrors('adherentId')}
@@ -168,10 +181,8 @@ const SubscriptionForm = ({ onClose, editingSubscription, filterType }) => {
                 type="date"
                 name="endDate"
                 value={formData.endDate}
-                onChange={handleChange}
-                isInvalid={!!error?.endDate}
+                disabled
                 required
-                disabled // La date de fin est calculée automatiquement
               />
               {renderErrors('endDate')}
             </InputGroup>

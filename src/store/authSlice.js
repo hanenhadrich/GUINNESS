@@ -1,4 +1,3 @@
-// src/features/authSlice.js
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { alertError, alertSuccess, extractErrorMessage } from "../utilities/feedback";
@@ -6,7 +5,7 @@ import { alertError, alertSuccess, extractErrorMessage } from "../utilities/feed
 const token = localStorage.getItem("token");
 const userDetails = localStorage.getItem("userDetails");
 const tokenExpiration = localStorage.getItem("tokenExpiration");
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:9090';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9090";
 
 export const requestLogin = createAsyncThunk(
   "users/login",
@@ -20,15 +19,17 @@ export const requestLogin = createAsyncThunk(
   }
 );
 
+
 export const requestRegister = createAsyncThunk(
   "users/register",
-  async ({ firstName, lastName, email, password }, { rejectWithValue }) => {
+  async ({ firstName, lastName, email, password, telephone }, { rejectWithValue }) => {
     try {
       const res = await axios.post(`${API_URL}/users/register`, {
         firstName,
         lastName,
         email,
         password,
+        telephone,
       });
       return res.data;
     } catch (error) {
@@ -36,6 +37,12 @@ export const requestRegister = createAsyncThunk(
     }
   }
 );
+
+const saveAuthToLocalStorage = (token, user) => {
+  localStorage.setItem("token", token);
+  localStorage.setItem("userDetails", JSON.stringify(user));
+  localStorage.setItem("tokenExpiration", (Date.now() + 60 * 60 * 1000).toString()); // 1h
+};
 
 const authSlice = createSlice({
   name: "auth",
@@ -52,9 +59,7 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.token = action.payload.token;
       state.user = action.payload.user;
-      localStorage.setItem("token", action.payload.token);
-      localStorage.setItem("userDetails", JSON.stringify(action.payload.user));
-      localStorage.setItem("tokenExpiration", (Date.now() + 60 * 60 * 1000).toString()); // 1h
+      saveAuthToLocalStorage(action.payload.token, action.payload.user);
     },
     logout: (state) => {
       state.isAuthenticated = false;
@@ -73,6 +78,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Login
       .addCase(requestLogin.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -82,14 +88,13 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.token = action.payload.token;
         state.user = action.payload.user;
-        localStorage.setItem("token", action.payload.token);
-        localStorage.setItem("userDetails", JSON.stringify(action.payload.user));
-        localStorage.setItem("tokenExpiration", (Date.now() + 60 * 60 * 1000).toString()); // 1h
+        saveAuthToLocalStorage(action.payload.token, action.payload.user);
       })
       .addCase(requestLogin.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })
+      // Register
       .addCase(requestRegister.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -97,12 +102,12 @@ const authSlice = createSlice({
       .addCase(requestRegister.fulfilled, (state, action) => {
         state.isLoading = false;
         state.registrationSuccess = true;
-        alertSuccess(action.payload.message);
+        alertSuccess(action.payload.message || "Inscription réussie !");
       })
       .addCase(requestRegister.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload;
-        alertError(action.payload);
+        state.error = action.payload || "Erreur lors de l'inscription";
+        alertError(state.error);
       });
   },
 });

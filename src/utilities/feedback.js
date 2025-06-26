@@ -1,14 +1,20 @@
-export const alertSuccess = (message) => {
-  alert(`✅ ${message}`);
-};
+import Swal from "sweetalert2";
 
-export const alertError = (message) => {
-  alert(`❌ ${message}`);
-};
-
-export const extractErrorMessage = (error) => {
-  if (error.response && error.response.data && error.response.data.message) {
-    return error.response.data.message;
+export function extractErrorMessage(error) {
+  if (error.response && error.response.data) {
+    const data = error.response.data;
+    if (typeof data === "string") return data;
+    if (data.error) return data.error;
+    if (data.message) return data.message;
+    return JSON.stringify(data);
   }
   return error.message || "Erreur inconnue";
-};
+}
+
+export function alertError(message) {
+  Swal.fire("Erreur", message, "error");
+}
+
+export function alertSuccess(message) {
+  Swal.fire("Succès", message, "success");
+}

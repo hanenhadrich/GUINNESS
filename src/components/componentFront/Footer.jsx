@@ -45,10 +45,10 @@ const Footer = () => {
             <div className="col-12 col-lg-4 mb-4">
               <h5 className="text-white mb-3 fw-bold">Sitemap</h5>
               <ul className="list-unstyled fs-6">
-                <li className="mb-2"><a href="/home" className="text-muted">Home</a></li>
-                <li className="mb-2"><a href="/about" className="text-muted">About</a></li>
-                <li className="mb-2"><a href="/abonnement" className="text-muted">Abonnement</a></li>
-                <li><a href="/contact" className="text-muted">Contact</a></li>
+                <li className="mb-2"><a href="/home" className="text-muted" style={{textDecoration: 'none' }}>Home</a></li>
+                <li className="mb-2"><a href="/about" className="text-muted" style={{textDecoration: 'none' }}>About</a></li>
+                <li className="mb-2"><a href="/abonnement" className="text-muted" style={{textDecoration: 'none' }}> Abonnement</a></li>
+                <li className="mb-2"><a href="/contact" className="text-muted" style={{textDecoration: 'none' }}>Contact</a></li>
               </ul>
             </div>
 

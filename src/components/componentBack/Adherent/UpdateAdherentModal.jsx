@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, InputGroup } from 'react-bootstrap';
 import { FaUser, FaEnvelope, FaPhone, FaEdit } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2'; 
 
 const UpdateAdherentModal = ({ show, onHide, onUpdate, adherent, error }) => {
   const [formData, setFormData] = useState({
@@ -23,7 +24,7 @@ const UpdateAdherentModal = ({ show, onHide, onUpdate, adherent, error }) => {
   }, [adherent]);
 
   const handleChange = (e) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
@@ -38,10 +39,10 @@ const UpdateAdherentModal = ({ show, onHide, onUpdate, adherent, error }) => {
     );
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isDataChanged()) {
-      toast.info("Aucune modification détectée, mise à jour annulée.");
+      toast.info('Aucune modification détectée, mise à jour annulée.');
       return;
     }
 
@@ -53,7 +54,13 @@ const UpdateAdherentModal = ({ show, onHide, onUpdate, adherent, error }) => {
       telephone: formData.telephone,
     };
 
-    onUpdate(updatedData);
+    try {
+      await onUpdate(updatedData); 
+      Swal.fire('Succès', 'Adhérent mis à jour avec succès !', 'success'); 
+      onHide(); 
+    } catch (err) {
+      Swal.fire('Erreur', "La mise à jour de l'adhérent a échoué.", 'error');
+    }
   };
 
   const renderErrors = (field) => {

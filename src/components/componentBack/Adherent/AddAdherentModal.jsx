@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, InputGroup } from 'react-bootstrap';
 import { FaUser, FaEnvelope, FaPhone, FaUserPlus } from 'react-icons/fa';
+import Swal from 'sweetalert2'; // ✅ Import de Swal
 
 const AddAdherentModal = ({ show, onHide, onAdd, error }) => {
   const [formData, setFormData] = useState({
@@ -12,25 +13,27 @@ const AddAdherentModal = ({ show, onHide, onAdd, error }) => {
 
   useEffect(() => {
     if (!show) {
-      setFormData({
-        nom: '',
-        prenom: '',
-        email: '',
-        telephone: '',
-      });
+      setFormData({ nom: '', prenom: '', email: '', telephone: '' });
     }
   }, [show]);
 
   const handleChange = (e) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onAdd(formData);
+    try {
+      await onAdd(formData);
+      Swal.fire('Succès', 'Adhérent ajouté avec succès !', 'success'); 
+      onHide(); 
+    } catch (error) {
+      
+      console.error('Erreur lors de l’ajout:', error);
+    }
   };
 
   const renderErrors = (field) => {
@@ -140,18 +143,10 @@ const AddAdherentModal = ({ show, onHide, onAdd, error }) => {
       </Modal.Body>
 
       <Modal.Footer className="d-flex justify-content-center">
-        <Button
-          variant="secondary"
-          onClick={onHide}
-          style={{ padding: '10px 20px', fontWeight: '600' }}
-        >
+        <Button variant="secondary" onClick={onHide} style={{ padding: '10px 20px', fontWeight: '600' }}>
           Annuler
         </Button>
-        <Button
-          variant="primary"
-          onClick={handleSubmit}
-          style={{ padding: '10px 20px', fontWeight: '600' }}
-        >
+        <Button variant="primary" onClick={handleSubmit} style={{ padding: '10px 20px', fontWeight: '600' }}>
           Ajouter
         </Button>
       </Modal.Footer>

@@ -67,7 +67,7 @@ const Sidebar = () => {
 
         <Link
           className="navbar-brand d-flex align-items-center"
-          to="/"
+          to="/compte"
           style={{ fontSize: "14px", color: "white" }}
         >
           <img

@@ -1,14 +1,14 @@
-// layouts/DashboardLayout.jsx
+// layouts/UserLayout.jsx
 import { Outlet } from "react-router-dom";
-import Sidebar from "../components/componentBack/Sidebar/Sidebar";
+import UserNavbar from "../components/componentBackUser/UserNavBar"; 
 import Footer from "../components/componentBack/Footer";
 import BackToTopButton from "../components/BackToTopButton";
 
-const DashboardLayout = () => {
+const UserLayout = () => {
   return (
     <div className="d-flex flex-column min-vh-100">
-      <Sidebar />
-      <main className="flex-grow-1 p-4" style={{ marginTop: "4rem" }}>
+      <UserNavbar />
+      <main className="flex-grow-1 p-4 mt-4">
         <Outlet />
       </main>
       <Footer />
@@ -17,4 +17,4 @@ const DashboardLayout = () => {
   );
 };
 
-export default DashboardLayout;
+export default UserLayout;

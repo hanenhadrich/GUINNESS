@@ -32,10 +32,12 @@ const AboutTabs = () => (
   <section className="about section-padding" style={{ marginTop: '0' }}>
     <div className="container">
       <div className="row">
-        <div className="col-12 text-center">
+        {/* <div className="col-12 text-center">
           <h2 className="mb-5 fw-bold" style={{ fontSize: '50px' }}>Commencer avec <span>Guinness</span> Co-Working Space</h2>
-        </div>
-
+        </div> */}
+  <h2 className="text-center mb-5 fw-bold" style={{ fontSize: '40px' }}>
+          Commencer avec<br/> <span>Guinness</span> Co-Working Space
+        </h2>
         <div className="col-lg-2 col-12 mt-auto mb-auto">
           <ul className="nav nav-pills mb-5 mx-auto justify-content-center align-items-center" id="pills-tab" role="tablist">
             {tabs.map((tab, index) => (

@@ -207,7 +207,7 @@ const SubscriptionList = ({ filterType }) => {
         <div className="card-body">
           <div className="d-flex align-items-center justify-content-between mb-4">
             <h2 className="mb-4 mt-2">
-              <Calendar className="mb-1 me-2" />
+              <Calendar color="#0d6efd"  className="mb-1 me-2" />
               Abonnements - {filterType}
             </h2>
 

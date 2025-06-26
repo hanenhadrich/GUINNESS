@@ -28,12 +28,12 @@ const services = [
 
 const Services = () => {
   return (
-    <section style={{ marginTop: '0px', marginBottom: '30px' }} >
+    <section style={{ marginTop: '10px', marginBottom: '30px' }} >
       <h2 className="text-center fw-bold" style={{ fontSize: '40px' }}>
         Nos <span>Espaces</span>
       </h2>
 
-      <div className="detailss" style={{ marginTop: '0px' }}>
+      <div className="detailss" style={{ marginTop: '10px' }}>
         <div className="container1" style={{ margin: '0px' }}>
           {services.map((service, index) => (
             <div className="box" key={index}>

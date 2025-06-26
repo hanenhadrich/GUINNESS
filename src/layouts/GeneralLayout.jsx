@@ -1,19 +1,14 @@
+// layouts/GeneralLayout.jsx
 import { Outlet } from "react-router-dom";
-import HomeNavbar from '../components/componentFront/HomeNavbar';
-import Footer from '../components/componentFront/Footer';
-import BackToTopButton from '../components/BackToTopButton';
-
-import '../css/slick.css';
-import '../css/guinnessstyle.css';
-import '../css/App.css';
-import '../css/index.css';
-import '../css/styles.css';
+import HomeNavbar from "../components/componentFront/HomeNavbar";
+import Footer from "../components/componentFront/Footer";
+import BackToTopButton from "../components/BackToTopButton";
 
 const GeneralLayout = () => {
   return (
     <>
       <HomeNavbar />
-      <main className="p-0 m-0"> {/* Supprime le margin/padding */}
+      <main className="p-0 m-0">
         <Outlet />
       </main>
       <Footer />

@@ -12,10 +12,11 @@ const SidebarData = [
     {
         title: "Adhérents",
         path: "/adherents",
-        icon: <FaIcons.FaUserCircle />,
+        icon: <FaIcons.FaAddressCard />,
+         
     },
     {
-        title: "Abonnement",
+        title: "Abonnements",
         icon: <FaIcons.FaBookOpen />,
         iconClosed: <RiIcons.RiArrowDownSFill />,
         iconOpened: <RiIcons.RiArrowUpSFill />,
@@ -36,11 +37,16 @@ const SidebarData = [
                 icon: <FaIcons.FaAngleRight/>,
             },
         ],
-    },       
+    }, 
+     {
+        title: "Reclamations",
+        path: "/reclamations",
+        icon: <IoIcons.IoMdHelpCircle />,
+    },      
     {
         title: "Profile",
         path: "/test-modal",
-        icon: <IoIcons.IoMdHelpCircle />,
+        icon: <FaIcons.FaUserCircle />,
     },
     {
         title: "Deconnexion",

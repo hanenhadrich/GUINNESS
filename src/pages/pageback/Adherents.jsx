@@ -148,10 +148,11 @@ const Adherents = () => {
       <div className="card shadow-lg mb-4 mx-md-5 mx-0">
 
         <div className="container mt-3">
-          <h2 className="mb-4 mt-2">
-            <Users className="mb-1 me-2" />
+          <h2 className="mb-4 mt-2 d-flex align-items-center">
+            <Users color="#198754" className="me-2" size={28} />
             Gestion des Adhérents
           </h2>
+
 
           <div className="d-flex mb-2">
             <select
