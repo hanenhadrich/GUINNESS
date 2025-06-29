@@ -21,6 +21,3 @@ const ContactSection = () => (
 );
 
 export default ContactSection;
-<div className="text-center mt-3">
-        
-      </div>

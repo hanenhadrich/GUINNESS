@@ -10,11 +10,11 @@ import { fetchSubscriptions, selectSubscriptions } from "../../store/subscriptio
 import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect } from "react";
 export default function Home() {
-  const dispatch = useDispatch(); // <-- Ajouté ici
+  const dispatch = useDispatch(); 
   const subscriptions = useSelector(selectSubscriptions);
 
   useEffect(() => {
-    dispatch(fetchSubscriptions()); // <-- dispatch défini
+    dispatch(fetchSubscriptions()); 
   }, [dispatch]);
 
   return (

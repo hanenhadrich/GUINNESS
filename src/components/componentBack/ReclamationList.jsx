@@ -27,7 +27,7 @@ const ReclamationList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const prevCountRef = useRef(reclamations.length); // nombre de réclamations avant
 
-  // Tri alphabétique par nom
+
   const sortedReclamations = [...reclamations].sort((a, b) =>
     a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' })
   );
@@ -43,7 +43,7 @@ const ReclamationList = () => {
     dispatch(fetchReclamations());
   }, [dispatch]);
 
-  // Vérifie les erreurs
+ 
   useEffect(() => {
     if (error) {
       Swal.fire({
@@ -54,7 +54,7 @@ const ReclamationList = () => {
     }
   }, [error, dispatch]);
 
-  // Vérifie le succès
+ 
   useEffect(() => {
     if (success) {
       Swal.fire({
@@ -67,7 +67,7 @@ const ReclamationList = () => {
     }
   }, [success, dispatch]);
 
-  // Vérifie l'ajout d'une nouvelle réclamation
+ 
   useEffect(() => {
     if (reclamations.length > prevCountRef.current) {
       const diff = reclamations.length - prevCountRef.current;

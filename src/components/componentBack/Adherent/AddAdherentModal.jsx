@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, InputGroup } from 'react-bootstrap';
 import { FaUser, FaEnvelope, FaPhone, FaUserPlus } from 'react-icons/fa';
-import Swal from 'sweetalert2'; // ✅ Import de Swal
+import Swal from 'sweetalert2'; 
 
 const AddAdherentModal = ({ show, onHide, onAdd, error }) => {
   const [formData, setFormData] = useState({

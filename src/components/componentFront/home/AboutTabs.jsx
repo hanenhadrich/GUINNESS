@@ -32,10 +32,7 @@ const AboutTabs = () => (
   <section className="about section-padding" style={{ marginTop: '0' }}>
     <div className="container">
       <div className="row">
-        {/* <div className="col-12 text-center">
-          <h2 className="mb-5 fw-bold" style={{ fontSize: '50px' }}>Commencer avec <span>Guinness</span> Co-Working Space</h2>
-        </div> */}
-  <h2 className="text-center mb-5 fw-bold" style={{ fontSize: '40px' }}>
+        <h2 className="text-center mb-5 fw-bold" style={{ fontSize: '40px' }}>
           Commencer avec<br/> <span>Guinness</span> Co-Working Space
         </h2>
         <div className="col-lg-2 col-12 mt-auto mb-auto">

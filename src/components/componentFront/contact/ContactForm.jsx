@@ -23,7 +23,7 @@ const ContactForm = () => {
       [e.target.name]: e.target.value,
     }));
 
-    // Efface l'erreur si utilisateur modifie un champ
+    
     if (error) {
       dispatch(clearError());
     }

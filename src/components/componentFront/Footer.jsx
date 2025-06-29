@@ -8,7 +8,7 @@ const Footer = () => {
     <footer className="bg-dark text-light pt-5">
       <div className="container">
 
-       
+        
         <div className="row justify-content-center mb-4">
           <div className="col-md-8 text-center border-bottom border-secondary pb-4">
             <ul className="list-unstyled d-flex justify-content-center gap-3">
@@ -31,24 +31,24 @@ const Footer = () => {
           </div>
         </div>
 
-      
+        
         <div className="container">
           <div className="row text-muted small">
 
             <div className="col-12 col-lg-4 mb-4">
-              <h5 className="text-white mb-3 fw-bold">About Us</h5>
+              <h5 className="text-white mb-3 fw-bold">À propos</h5>
               <p className="fs-6">
-                Espace de travail collaboratif à Sfax, dédié aux entrepreneurs, freelances et étudiants.
+                Espace de travail collaboratif situé à Sfax, dédié aux entrepreneurs, freelances et étudiants.
               </p>
             </div>
 
             <div className="col-12 col-lg-4 mb-4">
               <h5 className="text-white mb-3 fw-bold">Sitemap</h5>
               <ul className="list-unstyled fs-6">
-                <li className="mb-2"><a href="/home" className="text-muted" style={{textDecoration: 'none' }}>Home</a></li>
-                <li className="mb-2"><a href="/about" className="text-muted" style={{textDecoration: 'none' }}>About</a></li>
-                <li className="mb-2"><a href="/abonnement" className="text-muted" style={{textDecoration: 'none' }}> Abonnement</a></li>
-                <li className="mb-2"><a href="/contact" className="text-muted" style={{textDecoration: 'none' }}>Contact</a></li>
+                <li className="mb-2"><a href="/home" className="text-muted" style={{ textDecoration: 'none' }}>Accueil</a></li>
+                <li className="mb-2"><a href="/about" className="text-muted" style={{ textDecoration: 'none' }}>À propos</a></li>
+                <li className="mb-2"><a href="/abonnement" className="text-muted" style={{ textDecoration: 'none' }}>Abonnement</a></li>
+                <li className="mb-2"><a href="/contact" className="text-muted" style={{ textDecoration: 'none' }}>Contact</a></li>
               </ul>
             </div>
 

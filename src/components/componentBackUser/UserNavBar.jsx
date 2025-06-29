@@ -1,4 +1,4 @@
-// components/componentFront/UserNavbar.jsx
+
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
@@ -40,7 +40,7 @@ const UserNavbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm" ref={navbarRef}>
       <div className="container">
-        {/* Logo */}
+       
         <Link
           className="navbar-brand d-flex align-items-center"
           to="/user"
@@ -57,7 +57,7 @@ const UserNavbar = () => {
           </strong>
         </Link>
 
-        {/* Toggle sur mobile */}
+        
         <button
           className="navbar-toggler custom-toggler"
           type="button"
@@ -68,7 +68,7 @@ const UserNavbar = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* Menu à droite */}
+        
         <div className={`collapse navbar-collapse ${isOpen ? "show" : ""}`}>
           <ul className="navbar-nav ms-auto d-flex align-items-center">
             <li className="nav-item">

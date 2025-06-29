@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { requestRegister, resetRegistration, clearError } from "../../store/authSlice";
 import Swal from "sweetalert2";
-import { Link, useNavigate } from "react-router-dom"; // <-- import useNavigate
+import { Link, useNavigate } from "react-router-dom"; 
 
 const SignUpForm = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // <-- initialiser
+  const navigate = useNavigate(); 
 
   const { isLoading, error, registrationSuccess } = useSelector((state) => state.auth);
 
@@ -22,7 +22,6 @@ const SignUpForm = () => {
   useEffect(() => {
     if (registrationSuccess) {
       Swal.fire("Succès", "Inscription réussie !", "success").then(() => {
-        // Reset form
         setFormData({
           firstName: "",
           lastName: "",
@@ -32,7 +31,7 @@ const SignUpForm = () => {
           confirmPassword: "",
         });
         dispatch(resetRegistration());
-        navigate("/sign-in"); // <-- redirection vers page login
+        navigate("/sign-in"); 
       });
     }
   }, [registrationSuccess, dispatch, navigate]);

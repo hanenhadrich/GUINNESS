@@ -12,7 +12,7 @@ export const store = configureStore({
     adherents: adherentReducer,
     subscriptions: subscriptionReducer,
     auth: authReducer,
-    reclamations: reclamationReducer
+    reclamations: reclamationReducer,
   },
 });
 

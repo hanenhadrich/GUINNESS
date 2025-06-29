@@ -1,0 +1,15 @@
+Nom du projet : Guinness Coworking Space
+Description :
+Ce projet est une plateforme web dédiée à la gestion d’un espace de coworking situé à Sfax. 
+Elle permet de gérer les adhérents, les abonnements (hebdomadaires, mensuels, annuels), les réservations,
+et fournit une interface complète pour l'administration ainsi qu’une page publique de présentation du lieu.
+
+///////
+
+Frontend:	React.js, Redux Toolkit, React Router
+UI/Design:	Bootstrap, Tailwind CSS, Chart.js
+Backend:	Node.js, Express.js, Mongoose
+Authentification:	JWT(JSON Web Token), bcrypt
+Validation:	Joi
+Base de données:	MongoDB Atlas
+Gestion de projet:	Git, GitHub, VS Code

@@ -1,5 +1,3 @@
-// src/components/componentBack/Sidebar/IconEffectWrapper.jsx
-
 import React from "react";
 
 const IconEffectWrapper = ({ children }) => {

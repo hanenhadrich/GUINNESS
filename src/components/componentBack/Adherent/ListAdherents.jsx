@@ -6,7 +6,6 @@ const ITEMS_PER_PAGE = 10;
 const ListAdherents = ({ adherents, onUpdate, onDelete, error, loading }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Tri alphabétique par nom (A à Z)
   const sortedAdherents = [...adherents].sort((a, b) =>
     a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' })
   );

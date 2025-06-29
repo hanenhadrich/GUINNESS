@@ -26,7 +26,7 @@ const SubscriptionCalendarMonths = ({ filterType, subscriptions }) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // Trier du plus récent en haut au plus ancien en bas
+ 
   const sortedEntries = Object.entries(groupedSubscriptions).sort(
     ([dateA], [dateB]) => new Date(dateB) - new Date(dateA)
   );
@@ -119,10 +119,10 @@ const SubscriptionCalendarMonths = ({ filterType, subscriptions }) => {
                           let textColor = '';
                           if (isActive) {
                             if (isPast) {
-                              bgColor = '#a0aec0'; // gris moyen
-                              textColor = '#2d3748'; // texte sombre
+                              bgColor = '#a0aec0'; 
+                              textColor = '#2d3748'; 
                             } else {
-                              bgColor = '#4dabf7'; // bleu ciel
+                              bgColor = '#4dabf7';
                               textColor = 'white';
                             }
                           }

@@ -32,32 +32,30 @@ const SubscriptionList = ({ filterType }) => {
 
   const [searchField, setSearchField] = useState('nomPrenom');
   const [searchValue, setSearchValue] = useState('');
-  
-  // Nouvel état pour afficher le calendrier
   const [showCalendar, setShowCalendar] = useState(false);
 
-  // Fonction pour calculer la durée en jours
+//durée en jours
   const calculateDuration = (startDate, duration, type) => {
     const start = new Date(startDate);
     if (!duration) return 'Non définie';
 
     let endDate;
     if (type === 'mois') {
-      // Si c'est un abonnement mensuel, ajouter la durée en mois
+      
       endDate = new Date(start);
-      endDate.setDate(start.getDate() + 30); // Durée fixe de 30 jours
+      endDate.setDate(start.getDate() + 30); 
     } else {
-      // Si c'est un abonnement en jours, ajouter la durée en jours
+      
       endDate = new Date(start);
       endDate.setDate(start.getDate() + duration);
     }
 
-    // Calcul de la différence en jours
+    
     const durationInDays = Math.floor((endDate - new Date(startDate)) / (1000 * 60 * 60 * 24));
     return `${durationInDays} jours`; // Retourne la durée en jours
   };
 
-  // Chargement des abonnements et adhérents selon filtre et recherche
+  
   useEffect(() => {
     const filters = {};
     if (searchValue) {
@@ -71,32 +69,32 @@ const SubscriptionList = ({ filterType }) => {
     dispatch(fetchAdherents());
   }, [dispatch, searchField, searchValue]);
 
-  // Reset page à 1 lors du changement de filtre ou recherche
+ 
   useEffect(() => {
     setCurrentPage(1);
   }, [filterType, searchValue, searchField]);
 
-  // Ouvre le formulaire d’ajout (reset erreurs)
+ 
   const handleOpenForm = () => {
     dispatch(resetError());
     setEditingSubscription(null);
     setShowForm(true);
   };
 
-  // Ouvre le formulaire de modification (reset erreurs)
+  
   const handleEdit = (subscription) => {
     dispatch(resetError());
     setEditingSubscription(subscription);
     setShowForm(true);
   };
 
-  // Prépare la suppression (modale)
+  
   const handleDeleteClick = (subscription) => {
     setSubscriptionToDelete(subscription);
     setShowDeleteModal(true);
   };
 
-  // Confirme suppression et appelle action Redux
+
   const confirmDelete = () => {
     if (subscriptionToDelete) {
       dispatch(deleteSubscription(subscriptionToDelete._id));
@@ -105,20 +103,20 @@ const SubscriptionList = ({ filterType }) => {
     }
   };
 
-  // Ferme le formulaire (reset erreurs)
+  
   const handleCloseForm = () => {
     dispatch(resetError());
     setShowForm(false);
     setEditingSubscription(null);
   };
 
-  // Navigation pagination
+ 
   const goToPage = (page) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
   };
 
-  // Filtrer par type puis trier par date de début décroissante (plus récent en premier)
+ 
   const filteredList = list
     .filter((sub) => sub.type === filterType)
     .sort((a, b) => {
@@ -127,7 +125,7 @@ const SubscriptionList = ({ filterType }) => {
       return dateB - dateA;
     });
 
-  // Pagination
+  
   const totalPages = Math.ceil(filteredList.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentSubscriptions = filteredList.slice(
@@ -135,7 +133,7 @@ const SubscriptionList = ({ filterType }) => {
     startIndex + ITEMS_PER_PAGE
   );
 
-  // Pages visibles pour pagination (limité à 5 pages visibles max)
+
   const visiblePages = (() => {
     const delta = 2;
     let start = Math.max(1, currentPage - delta);
@@ -159,7 +157,7 @@ const SubscriptionList = ({ filterType }) => {
     return pages;
   })();
 
-  // Si showCalendar est true, afficher le calendrier
+
   if (showCalendar) {
     const filteredSubscriptions = list.filter((sub) => sub.type === filterType);
 
@@ -200,7 +198,7 @@ const SubscriptionList = ({ filterType }) => {
     );
   }
 
-  // Affichage liste classique
+ 
   return (
     <>
       <div className="card shadow-lg">
@@ -211,7 +209,7 @@ const SubscriptionList = ({ filterType }) => {
               Abonnements - {filterType}
             </h2>
 
-            {/* Bouton pour basculer vers le calendrier */}
+            
             <button
               className="btn btn-primary"
               onClick={() => setShowCalendar(true)}
