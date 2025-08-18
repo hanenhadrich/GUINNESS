@@ -11,7 +11,7 @@ const tabs = [
   {
     id: 'pills-youtube',
     title: 'Espace',
-    img: '/assets/images/bureau.jpg',
+    img: '/assets/images/box.jpg',
     heading: 'Espaces de travail',
     text: 'Nous disposons de bureaux privés, d’une salle de réunion parfaitement équipée et d’un espace nomade prévu pour la collaboration et l’échange.',
     link: 'about',

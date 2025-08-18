@@ -8,10 +8,10 @@ import {
   clearError,
   clearSuccess,
 } from '../../store/adherentSlice';
-import ListAdherents from '../../components/componentBack/Adherent/ListAdherents';
-import DeleteConfirmationModal from '../../components/componentBack/DeleteConfirmationModal';
-import UpdateAdherentModal from '../../components/componentBack//Adherent/UpdateAdherentModal';
-import AddAdherentModal from '../../components/componentBack/Adherent/AddAdherentModal';
+import ListAdherents from '../../components/componentBackAdmin/Adherent/ListAdherents';
+import DeleteConfirmationModal from '../../components/componentBackAdmin/DeleteConfirmationModal';
+import UpdateAdherentModal from '../../components/componentBackAdmin/Adherent/UpdateAdherentModal';
+import AddAdherentModal from '../../components/componentBackAdmin/Adherent/AddAdherentModal';
 import { Users, UserPlus } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

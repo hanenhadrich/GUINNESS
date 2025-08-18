@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaCheckSquare } from 'react-icons/fa';
+import '../../../css/Testimonial.css';
 
 const Testimonial = () => {
   const items = [
@@ -14,38 +15,23 @@ const Testimonial = () => {
   ];
 
   return (
-    <section className="testimonial section-padding" style={{ backgroundColor: '#f8f9fa', padding: '60px 0' }}>
+    <section className="testimonial">
       <div className="container">
-      
-         <h2 className="text-center fw-bold" style={{ fontSize: '40px' }}>
-          Trouvez<br/> <span>l’espace de travail </span>  qui vous inspire
+        <h2>
+          Trouvez<br /><span>l’espace de travail </span> qui vous inspire
         </h2>
-        <p className="lead text-center mb-5">
+        <p className="lead">
           Notre Co-working space est équipé pour vous accueillir dans des conditions flexibles, nous mettons à votre disposition :
         </p>
 
         <div className="row g-4 justify-content-center">
           {items.map((item, index) => (
             <div key={index} className="col-12 col-md-6 d-flex align-items-center">
-              <div
-                className="d-flex align-items-center p-3 w-100 shadow-sm bg-white rounded"
-                style={{ minHeight: '70px' }}
-              >
-                <div
-                  className="d-flex align-items-center justify-content-center"
-                  style={{
-                    width: '48px',
-                    height: '48px',
-                    borderRadius: '50%',
-                    backgroundColor: '#0A0A6B',
-                    color: 'white',
-                    marginRight: '15px',
-                    flexShrink: 0,
-                  }}
-                >
+              <div className="icon-box animated-card loaded">
+                <div className="icon-circle">
                   <FaCheckSquare size={24} />
                 </div>
-                <span className="fw-medium">{item}</span>
+                <span className="icon-text">{item}</span>
               </div>
             </div>
           ))}

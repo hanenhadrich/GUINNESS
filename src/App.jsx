@@ -29,7 +29,6 @@ import UpdateProfileForm from './pages/pageback/UpdateProfileForm';
 // Pages privées utilisateur simple
 import UserDashboard from './pages/UserDashboard';
 
-
 // Pages d'erreur
 import Error401 from './components/Error/Error401';
 import Error404 from './components/Error/Error404';

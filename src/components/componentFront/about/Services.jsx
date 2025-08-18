@@ -14,7 +14,7 @@ const services = [
   },
   {
     title: "BUREAU PRIVE",
-    image: "/assets/images/bureauprivé.jpg",
+    image: "/assets/images/bureau.jpg",
     description:
       "Un bureau privé idéal pour les start-ups et les jeunes entrepreneurs ainsi que les multinationales qui ont besoin de s’agrandir encore plus.",
   },

@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, InputGroup } from 'react-bootstrap';
-import { FaUser, FaEnvelope, FaPhone, FaEdit } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import Swal from 'sweetalert2'; 
+import { FaUser, FaEnvelope, FaPhone, FaUserPlus } from 'react-icons/fa';
 
-const UpdateAdherentModal = ({ show, onHide, onUpdate, adherent, error }) => {
+const AddAdherentModal = ({ show, onHide, onAdd, error }) => {
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
@@ -13,54 +11,26 @@ const UpdateAdherentModal = ({ show, onHide, onUpdate, adherent, error }) => {
   });
 
   useEffect(() => {
-    if (adherent) {
+    if (!show) {
       setFormData({
-        nom: adherent.nom || '',
-        prenom: adherent.prenom || '',
-        email: adherent.email || '',
-        telephone: adherent.telephone || '',
+        nom: '',
+        prenom: '',
+        email: '',
+        telephone: '',
       });
     }
-  }, [adherent]);
+  }, [show]);
 
   const handleChange = (e) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
 
-  const isDataChanged = () => {
-    return (
-      formData.nom !== (adherent.nom || '') ||
-      formData.prenom !== (adherent.prenom || '') ||
-      formData.email !== (adherent.email || '') ||
-      formData.telephone !== (adherent.telephone || '')
-    );
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!isDataChanged()) {
-      toast.info('Aucune modification détectée, mise à jour annulée.');
-      return;
-    }
-
-    const updatedData = {
-      _id: adherent._id,
-      nom: formData.nom,
-      prenom: formData.prenom,
-      email: formData.email,
-      telephone: formData.telephone,
-    };
-
-    try {
-      await onUpdate(updatedData); 
-      Swal.fire('Succès', 'Adhérent mis à jour avec succès !', 'success'); 
-      onHide(); 
-    } catch (err) {
-      Swal.fire('Erreur', "La mise à jour de l'adhérent a échoué.", 'error');
-    }
+    onAdd(formData);
   };
 
   const renderErrors = (field) => {
@@ -95,15 +65,14 @@ const UpdateAdherentModal = ({ show, onHide, onUpdate, adherent, error }) => {
     <Modal show={show} onHide={onHide} centered size="md" backdrop="static" keyboard={false}>
       <Modal.Header className="justify-content-center border-0">
         <Modal.Title className="d-flex align-items-center gap-2 fs-4 fw-bold text-primary">
-          <FaEdit className="me-2" />
-          Modifier un adhérent
+          <FaUserPlus className="me-2" />
+          Ajouter un adhérent
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body style={{ backgroundColor: '#f9f9f9' }}>
         {renderGeneralErrors()}
         <Form noValidate onSubmit={handleSubmit}>
-
           <Form.Group className="mb-4" controlId="nom">
             <Form.Label>Nom*</Form.Label>
             <InputGroup>
@@ -167,20 +136,27 @@ const UpdateAdherentModal = ({ show, onHide, onUpdate, adherent, error }) => {
               {renderErrors('telephone')}
             </InputGroup>
           </Form.Group>
-
         </Form>
       </Modal.Body>
 
       <Modal.Footer className="d-flex justify-content-center">
-        <Button variant="secondary" onClick={onHide} style={{ padding: '10px 20px', fontWeight: '600' }}>
+        <Button
+          variant="secondary"
+          onClick={onHide}
+          style={{ padding: '10px 20px', fontWeight: '600' }}
+        >
           Annuler
         </Button>
-        <Button variant="primary" onClick={handleSubmit} style={{ padding: '10px 20px', fontWeight: '600' }}>
-          Enregistrer
+        <Button
+          variant="primary"
+          onClick={handleSubmit}
+          style={{ padding: '10px 20px', fontWeight: '600' }}
+        >
+          Ajouter
         </Button>
       </Modal.Footer>
     </Modal>
   );
 };
 
-export default UpdateAdherentModal;
+export default AddAdherentModal;

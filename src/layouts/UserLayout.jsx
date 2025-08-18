@@ -1,7 +1,7 @@
-// layouts/UserLayout.jsx
+
 import { Outlet } from "react-router-dom";
 import UserNavbar from "../components/componentBackUser/UserNavBar"; 
-import Footer from "../components/componentBack/Footer";
+import Footer from "../components/componentBackAdmin/Footer";
 import BackToTopButton from "../components/BackToTopButton";
 
 const UserLayout = () => {

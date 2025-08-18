@@ -1,11 +1,11 @@
 import '../../css/index.css';
 import { CheckCheck, FilePenLine, ChartSpline } from 'lucide-react';
 
-import TodoList from '../../components/componentBack/Home/TodoList';
-import ReservationsList from '../../components/componentBack/Home/ReservationsList';
-import Statistique from '../../components/componentBack/Home/Statistique';
+import TodoList from '../../components/componentBackAdmin/Home/TodoList';
+import ReservationsList from '../../components/componentBackAdmin/Home/ReservationsList';
+import Statistique from '../../components/componentBackAdmin/Home/Statistique';
 import ErrorBoundary from '../../components/ErrorBoundary';
-import SubscriptionCalendarView from '../../components/componentBack/Home/SubscriptionCalendarView';
+import SubscriptionCalendarView from '../../components/componentBackAdmin/Home/SubscriptionCalendarView';
 import { fetchSubscriptions, selectSubscriptions } from "../../store/subscriptionSlice";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect } from "react";

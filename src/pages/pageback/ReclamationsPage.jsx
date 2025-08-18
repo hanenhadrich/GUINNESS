@@ -1,5 +1,5 @@
 
-import ReclamationList from "../../components/componentBack/ReclamationList";
+import ReclamationList from "../../components/componentBackAdmin/ReclamationList";
 import { CircleHelp } from "lucide-react";
 const ReclamationsPage = () => {
   return (

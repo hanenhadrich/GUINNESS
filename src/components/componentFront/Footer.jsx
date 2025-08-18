@@ -74,10 +74,17 @@ const Footer = () => {
         </div>
 
         
-        <div className="row border-top border-secondary pt-3 mt-3 ">
+        {/* <div className="row border-top border-secondary pt-3 mt-3 ">
           <div className="col-12 text-center">
             <p className="text-muted small mb-4 fs-6">
               © 2025 All Rights Reserved By <strong className="fw-bold">Hanen Riguen</strong>
+            </p>
+          </div>
+        </div> */}
+        <div className="row border-top border-secondary pt-3 mt-3">
+          <div className="col-12 text-center">
+            <p className="text-muted small mb-4 fs-6">
+              © 2024 Tous droits réservés By <strong className="fw-bold">Hanen Riguen</strong>
             </p>
           </div>
         </div>

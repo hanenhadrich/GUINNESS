@@ -1,7 +1,7 @@
-// layouts/DashboardLayout.jsx
+
 import { Outlet } from "react-router-dom";
-import Sidebar from "../components/componentBack/Sidebar/Sidebar";
-import Footer from "../components/componentBack/Footer";
+import Sidebar from "../components/componentBackAdmin/Sidebar/Sidebar";
+import Footer from "../components/componentBackAdmin/Footer";
 import BackToTopButton from "../components/BackToTopButton";
 
 const DashboardLayout = () => {

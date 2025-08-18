@@ -104,7 +104,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Login
+      
       .addCase(requestLogin.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -120,7 +120,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
-      // Register
+      
       .addCase(requestRegister.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -135,17 +135,15 @@ const authSlice = createSlice({
         state.error = action.payload || "Erreur lors de l'inscription";
         alertError(state.error);
       })
-      // Update profile
+      
       .addCase(requestUpdateProfile.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
       .addCase(requestUpdateProfile.fulfilled, (state, action) => {
         state.isLoading = false;
-        // Mise à jour user dans le state
         state.user = action.payload.user;
         alertSuccess(action.payload.message || "Profil mis à jour avec succès");
-        // Mettre à jour localStorage aussi
         localStorage.setItem("userDetails", JSON.stringify(action.payload.user));
       })
       .addCase(requestUpdateProfile.rejected, (state, action) => {

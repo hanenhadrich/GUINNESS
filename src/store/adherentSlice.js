@@ -112,7 +112,7 @@ const adherentSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch
+      
       .addCase(fetchAdherents.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -120,7 +120,7 @@ const adherentSlice = createSlice({
       })
       .addCase(fetchAdherents.fulfilled, (state, action) => {
         state.loading = false;
-        // Tri alphabétique sur nom
+        
         state.list = action.payload.slice().sort((a, b) => a.nom.localeCompare(b.nom));
         state.error = null;
         state.success = null;
@@ -133,7 +133,7 @@ const adherentSlice = createSlice({
         state.success = null;
       })
 
-      // Create
+      
       .addCase(createAdherent.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -152,7 +152,7 @@ const adherentSlice = createSlice({
         state.success = null;
       })
 
-      // Update
+      
       .addCase(updateAdherent.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -174,7 +174,6 @@ const adherentSlice = createSlice({
         state.success = null;
       })
 
-      // Delete
       .addCase(deleteAdherent.pending, (state) => {
         state.loading = true;
         state.error = null;

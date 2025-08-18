@@ -1,13 +1,13 @@
 import React from 'react';
 
 const SubscriptionCalendarMonths = ({ filterType, subscriptions }) => {
-  // Grouper les abonnements par date de début
+  
   const groupedSubscriptions = subscriptions
     .filter(sub => sub.type === filterType)
     .reduce((groups, sub) => {
       const startKeyDate = new Date(sub.startDate);
       startKeyDate.setHours(0, 0, 0, 0);
-      const startKey = startKeyDate.toLocaleDateString('fr-CA'); // YYYY-MM-DD
+      const startKey = startKeyDate.toLocaleDateString('fr-CA'); 
       if (!groups[startKey]) groups[startKey] = [];
       groups[startKey].push(sub);
       return groups;

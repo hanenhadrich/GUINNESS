@@ -40,9 +40,9 @@ const ListAdherents = ({ adherents, onUpdate, onDelete, error, loading }) => {
 
   return (
     <>
-      <div className="text-center mb-2">
+      {/* <div className="text-center mb-2">
         Page {currentPage} sur {totalPages} — {adherents.length} adhérent{adherents.length > 1 ? 's' : ''} au total
-      </div>
+      </div> */}
 
       <div className="table-responsive">
         <table className="table table-bordered table-hover align-middle">

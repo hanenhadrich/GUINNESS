@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, InputGroup } from 'react-bootstrap';
-import { FaUser, FaEnvelope, FaPhone, FaUserPlus } from 'react-icons/fa';
-import Swal from 'sweetalert2'; 
+import { FaUser, FaEnvelope, FaPhone, FaEdit } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
-const AddAdherentModal = ({ show, onHide, onAdd, error }) => {
+const UpdateAdherentModal = ({ show, onHide, onUpdate, adherent, error }) => {
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
@@ -12,28 +12,48 @@ const AddAdherentModal = ({ show, onHide, onAdd, error }) => {
   });
 
   useEffect(() => {
-    if (!show) {
-      setFormData({ nom: '', prenom: '', email: '', telephone: '' });
+    if (adherent) {
+      setFormData({
+        nom: adherent.nom || '',
+        prenom: adherent.prenom || '',
+        email: adherent.email || '',
+        telephone: adherent.telephone || '',
+      });
     }
-  }, [show]);
+  }, [adherent]);
 
   const handleChange = (e) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const isDataChanged = () => {
+    return (
+      formData.nom !== (adherent.nom || '') ||
+      formData.prenom !== (adherent.prenom || '') ||
+      formData.email !== (adherent.email || '') ||
+      formData.telephone !== (adherent.telephone || '')
+    );
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await onAdd(formData);
-      Swal.fire('Succès', 'Adhérent ajouté avec succès !', 'success'); 
-      onHide(); 
-    } catch (error) {
-      
-      console.error('Erreur lors de l’ajout:', error);
+    if (!isDataChanged()) {
+      toast.info("Aucune modification détectée, mise à jour annulée.");
+      return;
     }
+
+    const updatedData = {
+      _id: adherent._id,
+      nom: formData.nom,
+      prenom: formData.prenom,
+      email: formData.email,
+      telephone: formData.telephone,
+    };
+
+    onUpdate(updatedData);
   };
 
   const renderErrors = (field) => {
@@ -68,14 +88,15 @@ const AddAdherentModal = ({ show, onHide, onAdd, error }) => {
     <Modal show={show} onHide={onHide} centered size="md" backdrop="static" keyboard={false}>
       <Modal.Header className="justify-content-center border-0">
         <Modal.Title className="d-flex align-items-center gap-2 fs-4 fw-bold text-primary">
-          <FaUserPlus className="me-2" />
-          Ajouter un adhérent
+          <FaEdit className="me-2" />
+          Modifier un adhérent
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body style={{ backgroundColor: '#f9f9f9' }}>
         {renderGeneralErrors()}
         <Form noValidate onSubmit={handleSubmit}>
+
           <Form.Group className="mb-4" controlId="nom">
             <Form.Label>Nom*</Form.Label>
             <InputGroup>
@@ -139,6 +160,7 @@ const AddAdherentModal = ({ show, onHide, onAdd, error }) => {
               {renderErrors('telephone')}
             </InputGroup>
           </Form.Group>
+
         </Form>
       </Modal.Body>
 
@@ -147,11 +169,11 @@ const AddAdherentModal = ({ show, onHide, onAdd, error }) => {
           Annuler
         </Button>
         <Button variant="primary" onClick={handleSubmit} style={{ padding: '10px 20px', fontWeight: '600' }}>
-          Ajouter
+          Enregistrer
         </Button>
       </Modal.Footer>
     </Modal>
   );
 };
 
-export default AddAdherentModal;
+export default UpdateAdherentModal;

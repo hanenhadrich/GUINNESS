@@ -1,13 +1,13 @@
 import React from 'react';
 
 const SubscriptionCalendarAutre = ({ filterType, subscriptions }) => {
-  // abonnements par date de début
+
   const groupedSubscriptions = subscriptions
     .filter(sub => sub.type === filterType)
     .reduce((groups, sub) => {
       const startKeyDate = new Date(sub.startDate);
       startKeyDate.setHours(0, 0, 0, 0);
-      const startKey = startKeyDate.toLocaleDateString('fr-CA'); // YYYY-MM-DD
+      const startKey = startKeyDate.toLocaleDateString('fr-CA'); 
       if (!groups[startKey]) groups[startKey] = [];
       groups[startKey].push(sub);
       return groups;
@@ -26,7 +26,7 @@ const SubscriptionCalendarAutre = ({ filterType, subscriptions }) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  //  récent ancien en bas
+
   const sortedEntries = Object.entries(groupedSubscriptions).sort(
     ([dateA], [dateB]) => new Date(dateB) - new Date(dateA)
   );

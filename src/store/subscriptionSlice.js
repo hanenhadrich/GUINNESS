@@ -1,16 +1,16 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// URL de l'API
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:9090/subscriptions';
 
-// Extraction propre des erreurs axios
+
 const extractError = (error, fallback = 'Erreur inconnue') => {
   const err = error?.response?.data;
   return typeof err === 'string' ? { message: err } : err || { message: fallback };
 };
 
-// Hydratation locale des adhérents
+// Hydratation locale pour joindre les données adherent stockées en local
 const hydrateAdherentFromLocalStorage = (subscription) => {
   const adherents = JSON.parse(localStorage.getItem('adherents')) || [];
   const found = adherents.find(a => a._id === subscription.adherent);
@@ -19,8 +19,6 @@ const hydrateAdherentFromLocalStorage = (subscription) => {
   }
   return subscription;
 };
-
-// Thunks asynchrones
 
 export const fetchSubscriptions = createAsyncThunk(
   'subscriptions/fetchSubscriptions',
@@ -71,8 +69,6 @@ export const deleteSubscription = createAsyncThunk(
   }
 );
 
-// Slice Redux
-
 const subscriptionSlice = createSlice({
   name: 'subscriptions',
   initialState: {
@@ -113,7 +109,7 @@ const subscriptionSlice = createSlice({
       })
       .addCase(createSubscription.fulfilled, (state, action) => {
         state.loading = false;
-        let newSub = hydrateAdherentFromLocalStorage(action.payload);
+        const newSub = hydrateAdherentFromLocalStorage(action.payload);
         state.list.push(newSub);
         state.successMessage = "Abonnement créé avec succès.";
       })
@@ -129,7 +125,7 @@ const subscriptionSlice = createSlice({
       })
       .addCase(updateSubscription.fulfilled, (state, action) => {
         state.loading = false;
-        let updatedSub = hydrateAdherentFromLocalStorage(action.payload);
+        const updatedSub = hydrateAdherentFromLocalStorage(action.payload);
         const index = state.list.findIndex(sub => sub._id === updatedSub._id);
         if (index !== -1) {
           state.list[index] = updatedSub;
@@ -157,8 +153,6 @@ const subscriptionSlice = createSlice({
       });
   },
 });
-
-// Exports
 
 export const { resetError, resetSuccess } = subscriptionSlice.actions;
 

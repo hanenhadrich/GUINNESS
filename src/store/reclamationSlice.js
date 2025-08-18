@@ -1,5 +1,5 @@
-// src/store/reclamationSlice.js
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+
+import { createAsyncThunk, createSlice, createSelector } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:9090/reclamations';
@@ -73,6 +73,20 @@ export const deleteReclamation = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(
         error.response?.data || { general: "Erreur lors de la suppression de la réclamation" }
+      );
+    }
+  }
+);
+
+export const markReclamationAsRead = createAsyncThunk(
+  'reclamations/markAsRead',
+  async (reclamationId, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(`${API_URL}/${reclamationId}/read`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || { general: 'Erreur lors du marquage comme lu' }
       );
     }
   }
@@ -170,9 +184,27 @@ const reclamationSlice = createSlice({
       .addCase(deleteReclamation.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || { general: "Erreur lors de la suppression" };
+      })
+
+      .addCase(markReclamationAsRead.fulfilled, (state, action) => {
+        const index = state.list.findIndex(r => r._id === action.payload._id);
+        if (index !== -1) {
+          state.list[index] = action.payload;
+        }
+      })
+      .addCase(markReclamationAsRead.rejected, (state, action) => {
+        state.error = action.payload || { general: 'Erreur inattendue' };
       });
   },
 });
+
+// Mémoïsation du sélecteur des réclamations non lues
+const selectReclamationsList = (state) => state.reclamations.list;
+
+export const selectUnreadReclamations = createSelector(
+  [selectReclamationsList],
+  (list) => list.filter((r) => r.isRead === false)
+);
 
 export const {
   clearError,
@@ -185,6 +217,6 @@ export const {
 export const selectReclamationsLoading = (state) => state.reclamations.loading;
 export const selectReclamationsError = (state) => state.reclamations.error;
 export const selectReclamationsSuccess = (state) => state.reclamations.success;
-export const selectReclamations = (state) => state.reclamations.list;
+export const selectReclamations = selectReclamationsList;
 
 export default reclamationSlice.reducer;

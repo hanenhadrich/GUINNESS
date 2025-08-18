@@ -1,4 +1,4 @@
-// layouts/GeneralLayout.jsx
+
 import { Outlet } from "react-router-dom";
 import HomeNavbar from "../components/componentFront/HomeNavbar";
 import Footer from "../components/componentFront/Footer";
@@ -8,10 +8,10 @@ const GeneralLayout = () => {
   return (
     <>
       <HomeNavbar />
-      <main className="p-0 m-0">
-        <Outlet />
-      </main>
-      <Footer />
+          <main className="p-0 m-0">
+            <Outlet />
+          </main>
+        <Footer />
       <BackToTopButton />
     </>
   );

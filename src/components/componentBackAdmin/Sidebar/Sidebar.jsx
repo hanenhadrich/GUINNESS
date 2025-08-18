@@ -1,5 +1,6 @@
+
 import React, { useState } from "react";
-import { useSelector } from "react-redux";  
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import * as FaIcons from "react-icons/fa";
@@ -8,6 +9,7 @@ import SidebarData from "./SidebarData";
 import SubMenu from "./SubMenu";
 import { IconContext } from "react-icons/lib";
 import IconEffectWrapper from "./IconEffectWrapper";
+import NotificationBell from "../../componentBackAdmin/NotificationBell"; 
 
 
 const Nav = styled.div`
@@ -41,6 +43,7 @@ const SidebarNav = styled.nav`
   position: fixed;
   top: 0;
   left: ${({ $sidebar }) => ($sidebar ? "0" : "-100%")};
+  transition: 350ms;
   z-index: 10;
 `;
 
@@ -59,23 +62,29 @@ const Sidebar = () => {
 
   return (
     <IconContext.Provider value={{ color: "#fff" }}>
+      {/* Navbar */}
       <Nav>
         <NavIcon to="#">
           <IconEffectWrapper>
             <FaIcons.FaBars onClick={showSidebar} />
           </IconEffectWrapper>
         </NavIcon>
-
+        <div className="d-flex align-items-right me-3">
+          <div className="mt-2 me-4">
+            <NotificationBell />
+          </div>  
+        
         <Link
-          className="navbar-brand d-flex align-items-center"
+          className="navbar-brand d-flex align-items-center position-relative"
           to="/compte"
-          style={{ fontSize: "14px", color: "white" }}
+          style={{ fontSize: "14px", color: "white", flexShrink: 0 }}
         >
           <img
             src="/assets/img/GN-Photoroom.png"
             alt="Guinness Co-working Space"
             style={{ height: "40px", borderRadius: "50%" }}
           />
+         
           <div className="d-flex flex-column ms-2">
             <span style={{ fontWeight: "bold", textAlign: "center" }}>
               GUINNESS
@@ -83,8 +92,10 @@ const Sidebar = () => {
             <span style={{ fontSize: "12px" }}>CO-WORKING SPACE</span>
           </div>
         </Link>
+        </div>
       </Nav>
 
+      {/* Sidebar latérale */}
       <SidebarNav $sidebar={sidebar} onMouseLeave={hideSidebar}>
         <SidebarWrap>
           <NavIcon to="#">

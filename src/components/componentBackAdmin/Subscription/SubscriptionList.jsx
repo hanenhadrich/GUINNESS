@@ -34,7 +34,7 @@ const SubscriptionList = ({ filterType }) => {
   const [searchValue, setSearchValue] = useState('');
   const [showCalendar, setShowCalendar] = useState(false);
 
-//durée en jours
+
   const calculateDuration = (startDate, duration, type) => {
     const start = new Date(startDate);
     if (!duration) return 'Non définie';
@@ -52,7 +52,7 @@ const SubscriptionList = ({ filterType }) => {
 
     
     const durationInDays = Math.floor((endDate - new Date(startDate)) / (1000 * 60 * 60 * 24));
-    return `${durationInDays} jours`; // Retourne la durée en jours
+    return `${durationInDays} jours`; 
   };
 
   
@@ -291,7 +291,7 @@ const SubscriptionList = ({ filterType }) => {
                             ? new Date(
                                 startDate.getTime() +
                                   (subscription.type === 'mois'
-                                    ? 30 * 86400000  // Fixe à 30 jours pour type "mois"
+                                    ? 30 * 86400000  
                                     : subscription.duration * 86400000)
                               )
                             : null;

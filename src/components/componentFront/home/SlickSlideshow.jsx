@@ -10,7 +10,7 @@ const slides = [
     
   },
   {
-    image: '/assets/images/boxx.jpg',
+    image: '/assets/images/bureau.jpg',
     title: 'Notre Service',
     text: 'Nous disposons un open space, de bureaux privés, d’une salle de réunion parfaitement équipée et d’un espace nomade prévu pour la collaboration et l’échange',
     

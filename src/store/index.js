@@ -5,6 +5,7 @@ import adherentReducer from './adherentSlice';
 import subscriptionReducer from './subscriptionSlice';
 import authReducer from './authSlice';
 import reclamationReducer from './reclamationSlice';
+
 export const store = configureStore({
   reducer: {
     todos: todoReducer,
@@ -15,6 +16,5 @@ export const store = configureStore({
     reclamations: reclamationReducer,
   },
 });
-
 
 export default store;

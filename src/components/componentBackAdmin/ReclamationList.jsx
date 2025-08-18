@@ -25,7 +25,7 @@ const ReclamationList = () => {
   const success = useSelector(selectReclamationsSuccess);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const prevCountRef = useRef(reclamations.length); // nombre de réclamations avant
+  const prevCountRef = useRef(reclamations.length); 
 
 
   const sortedReclamations = [...reclamations].sort((a, b) =>

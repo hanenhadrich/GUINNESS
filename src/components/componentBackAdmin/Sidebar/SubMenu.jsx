@@ -10,7 +10,7 @@ const SubMenu = ({ item, toggleSidebar }) => {
 
   const showSubnav = () => setSubnav(true);
   const hideSubnav = () => {
-    closeTimeout.current = setTimeout(() => setSubnav(false), 200); // 200ms delay
+    closeTimeout.current = setTimeout(() => setSubnav(false), 200); 
   };
   const clearHideTimeout = () => {
     if (closeTimeout.current) clearTimeout(closeTimeout.current);
