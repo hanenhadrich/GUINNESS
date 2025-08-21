@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:9090/adherents';
 
+// Helper pour nettoyer les params de recherche
 const cleanParams = (params) => {
   return Object.keys(params).reduce((acc, key) => {
     if (params[key] !== undefined && params[key] !== null && params[key] !== '') {
@@ -12,6 +13,9 @@ const cleanParams = (params) => {
   }, {});
 };
 
+// ------------------- Actions Async -------------------
+
+// Fetch adherents
 export const fetchAdherents = createAsyncThunk(
   'adherents/fetchAdherents',
   async (searchParams = {}, { rejectWithValue }) => {
@@ -21,13 +25,13 @@ export const fetchAdherents = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data || 
-        { general: error.message || 'Erreur lors de la récupération des adhérents' }
+        error.response?.data || { general: error.message || 'Erreur lors de la récupération des adhérents' }
       );
     }
   }
 );
 
+// Create adherent
 export const createAdherent = createAsyncThunk(
   'adherents/create',
   async (adherent, { rejectWithValue }) => {
@@ -37,19 +41,15 @@ export const createAdherent = createAsyncThunk(
     } catch (err) {
       const data = err.response?.data;
 
-      if (Array.isArray(data)) {
-        return rejectWithValue({ general: data });
-      }
-
-      if (typeof data === 'object') {
-        return rejectWithValue(data);
-      }
+      if (Array.isArray(data)) return rejectWithValue({ general: data });
+      if (typeof data === 'object') return rejectWithValue(data);
 
       return rejectWithValue({ general: ['Erreur inconnue'] });
     }
   }
 );
 
+// Update adherent
 export const updateAdherent = createAsyncThunk(
   'adherents/update',
   async (adherent, { rejectWithValue }) => {
@@ -58,14 +58,12 @@ export const updateAdherent = createAsyncThunk(
       const res = await axios.put(`${API_URL}/${_id}`, dataToUpdate);
       return res.data;
     } catch (err) {
-      if (err.response?.data) {
-        return rejectWithValue(err.response.data);
-      }
-      return rejectWithValue({ general: 'Erreur inconnue' });
+      return rejectWithValue(err.response?.data || { general: 'Erreur lors de la mise à jour' });
     }
   }
 );
 
+// Delete adherent
 export const deleteAdherent = createAsyncThunk(
   'adherents/deleteAdherent',
   async (adherentId, { rejectWithValue }) => {
@@ -73,13 +71,12 @@ export const deleteAdherent = createAsyncThunk(
       await axios.delete(`${API_URL}/${adherentId}`);
       return adherentId;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data || { general: "Erreur lors de la suppression de l'adhérent" }
-      );
+      return rejectWithValue(error.response?.data || { general: "Erreur lors de la suppression de l'adhérent" });
     }
   }
 );
 
+// ------------------- Slice -------------------
 const adherentSlice = createSlice({
   name: 'adherents',
   initialState: {
@@ -112,7 +109,7 @@ const adherentSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      
+      // ------------------- Fetch -------------------
       .addCase(fetchAdherents.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -120,11 +117,15 @@ const adherentSlice = createSlice({
       })
       .addCase(fetchAdherents.fulfilled, (state, action) => {
         state.loading = false;
-        
-        state.list = action.payload.slice().sort((a, b) => a.nom.localeCompare(b.nom));
+        if (Array.isArray(action.payload)) {
+          state.list = action.payload.slice().sort((a, b) => a.nom.localeCompare(b.nom));
+          localStorage.setItem('adherents', JSON.stringify(action.payload));
+        } else {
+          state.list = [];
+          console.warn('fetchAdherents: payload is not an array', action.payload);
+        }
         state.error = null;
         state.success = null;
-         localStorage.setItem('adherents', JSON.stringify(action.payload));
       })
       .addCase(fetchAdherents.rejected, (state, action) => {
         console.error('Fetch adherents error:', action.payload);
@@ -133,7 +134,7 @@ const adherentSlice = createSlice({
         state.success = null;
       })
 
-      
+      // ------------------- Create -------------------
       .addCase(createAdherent.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -152,7 +153,7 @@ const adherentSlice = createSlice({
         state.success = null;
       })
 
-      
+      // ------------------- Update -------------------
       .addCase(updateAdherent.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -161,19 +162,18 @@ const adherentSlice = createSlice({
       .addCase(updateAdherent.fulfilled, (state, action) => {
         state.loading = false;
         const index = state.list.findIndex((adherent) => adherent._id === action.payload._id);
-        if (index !== -1) {
-          state.list[index] = action.payload;
-        }
+        if (index !== -1) state.list[index] = action.payload;
         state.error = null;
         state.success = 'Adhérent mis à jour avec succès !';
       })
       .addCase(updateAdherent.rejected, (state, action) => {
         console.error('Update adherent error:', action.payload);
         state.loading = false;
-        state.error = action.payload || { general: "Erreur lors de la mise à jour" };
+        state.error = action.payload || { general: 'Erreur lors de la mise à jour' };
         state.success = null;
       })
 
+      // ------------------- Delete -------------------
       .addCase(deleteAdherent.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -188,12 +188,13 @@ const adherentSlice = createSlice({
       .addCase(deleteAdherent.rejected, (state, action) => {
         console.error('Delete adherent error:', action.payload);
         state.loading = false;
-        state.error = action.payload || { general: "Erreur lors de la suppression" };
+        state.error = action.payload || { general: 'Erreur lors de la suppression' };
         state.success = null;
       });
   },
 });
 
+// ------------------- Exports -------------------
 export const {
   clearError,
   clearSuccess,
@@ -201,6 +202,8 @@ export const {
   setSelectedAdherent,
   clearSelectedAdherent,
 } = adherentSlice.actions;
+
 export const selectAdherentsLoading = (state) => state.adherents.loading;
 export const selectAdherents = (state) => state.adherents.list;
+
 export default adherentSlice.reducer;
