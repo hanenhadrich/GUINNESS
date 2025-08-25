@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:9090/subscriptions';
+const API_URL = import.meta.env.VITE_API_URL + "/subscriptions"|| 'http://localhost:9090/subscriptions';
 
 
 const extractError = (error, fallback = 'Erreur inconnue') => {
