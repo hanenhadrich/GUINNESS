@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const TODO_API_URL = import.meta.env.VITE_TODO_API_URL || 'http://localhost:9090/todos';
+const TODO_API_URL = import.meta.env.VITE_TODO_API_URL + "/todos"|| 'http://localhost:9090/todos';
 
 
 export const fetchTodos = createAsyncThunk('todos/fetchTodos', async (_, { rejectWithValue }) => {
