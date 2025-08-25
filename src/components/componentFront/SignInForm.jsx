@@ -69,6 +69,7 @@ const SignInForm = () => {
                       type="password"
                       className="form-control"
                       placeholder="Mot de passe"
+                      autocomplete="current-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
