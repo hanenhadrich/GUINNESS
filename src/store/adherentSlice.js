@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:9090/adherents';
+const API_URL = import.meta.env.VITE_API_URL + "/adherents" || 'http://localhost:9090/adherents';
 
 // Helper pour nettoyer les params de recherche
 const cleanParams = (params) => {
