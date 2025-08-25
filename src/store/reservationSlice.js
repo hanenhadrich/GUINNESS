@@ -1,13 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_URL =
-  import.meta.env.VITE_API_URL || 'http://localhost:9090/reservations' ;
-
+const API_URL = import.meta.env.VITE_API_URL + "/reservations" || 'http://localhost:9090/reservations';
 
 
 export const fetchReservations = createAsyncThunk(
-  '/reservations/fetchReservations',
+  'reservations/fetchReservations',
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(API_URL);
@@ -20,7 +18,7 @@ export const fetchReservations = createAsyncThunk(
 );
 
 export const createReservation = createAsyncThunk(
-  '/reservations/createReservation',
+  'reservations/createReservation',
   async (newReservation, { rejectWithValue }) => {
     try {
       
@@ -34,7 +32,7 @@ export const createReservation = createAsyncThunk(
 );
 
 export const updateReservation = createAsyncThunk(
-  '/reservations/updateReservation',
+  'reservations/updateReservation',
   async ({ reservationId, newData }, { rejectWithValue }) => {
     try {
       
@@ -48,7 +46,7 @@ export const updateReservation = createAsyncThunk(
 );
 
 export const deleteReservation = createAsyncThunk(
-  '/reservations/deleteReservation',
+  'reservations/deleteReservation',
   async (reservationId, { rejectWithValue }) => {
     try {
       await axios.delete(`${API_URL}/${reservationId}`);
