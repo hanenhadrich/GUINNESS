@@ -2,7 +2,7 @@
 import { createAsyncThunk, createSlice, createSelector } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:9090/reclamations';
+const API_URL = import.meta.env.VITE_API_URL + "/reclamations"|| 'http://localhost:9090/reclamations';
 
 const cleanParams = (params) => {
   return Object.keys(params).reduce((acc, key) => {
