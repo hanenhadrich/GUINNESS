@@ -4,6 +4,7 @@ import { requestLogin } from '../../store/authSlice';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import '../../css/subscriptionCalendar.css';
+
 const SignInForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -12,7 +13,6 @@ const SignInForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // Écoute la réponse du backend
   useEffect(() => {
     const customMessage = localStorage.getItem('loginMessage');
     if (isAuthenticated && user && customMessage) {
@@ -61,6 +61,7 @@ const SignInForm = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
+                      autoComplete="username" // <-- ajouté pour Chrome
                     />
                     <label>Email</label>
                   </div>
@@ -69,10 +70,10 @@ const SignInForm = () => {
                       type="password"
                       className="form-control"
                       placeholder="Mot de passe"
-                      autocomplete="current-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
+                      autoComplete="current-password" // <-- ajouté pour Chrome
                     />
                     <label>Mot de passe</label>
                   </div>
